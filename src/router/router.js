@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import HelloWorld from '../components/HelloWorld'
+import mainPage from '../components/mainPage'
+import addNumber from '../components/addNumber'
+import addNumbers from '../components/addNumbers'
 import autoriseComponent from '../components/autoriseComponent'
 
 import store from '../store/store';
@@ -16,14 +18,27 @@ let router = new VueRouter ( {
                 path: '/',
                 name: 'service',
                 meta: {title: "Панель управления"},
-                component: HelloWorld
+                component: mainPage
             },
             {
                 path: '/login',
                 name: 'login',
-                meta: {title: "Авторизация в LS CRM"},
+                meta: {title: "Авторизация в системе"},
                 component: autoriseComponent
+            },
+            {
+                path: '/add_number',
+                name: 'addone',
+                meta: {title: "Добавить номер"},
+                component: addNumber
+            },
+            {
+                path: '/add_numbers',
+                name: 'addfull',
+                meta: {title: "Пакетное добавление номеров"},
+                component: addNumbers
             }
+
 
             
         ]
@@ -38,11 +53,14 @@ router.beforeEach((to, from, next) => {
     {
         store.dispatch('chengeAutorise',  true);
         store.dispatch('chengeUserName',   localStorage.getItem('fio'));
+        store.dispatch('showedPanel',  true);
     }
     else {
         store.dispatch('chengeAutorise',  false);
         if (to.name !== "login") 
            allLibs.reloginUser();
+
+           store.dispatch('showedPanel',  false);
     } 
 
     if ((!store.getters.AUTORISE) && (to.name !== "login")) {
