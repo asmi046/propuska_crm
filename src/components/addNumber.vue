@@ -5,21 +5,23 @@
           <h1>Добавить номер</h1>
         </v-col>
     </v-row>
-    <v-form>
+    <v-form ref = "addOneNumber">
       <v-row>
         <v-col md = "6" xl = "6" cols="12">
           <v-text-field
           placeholder="X###XX###"
           v-model="dataOfNumber.number"
           v-mask = "'X###XX##N'"
-          label = "Номер авто"
+          label = "Номер авто*"
           outlined
+          :rules="requiredRules"
            />
 
           <v-text-field
           v-model="dataOfNumber.email"
-          label = "e-mail"
+          label = "e-mail*"
           outlined
+          :rules="requiredRules"
            />
 
            <v-text-field
@@ -36,9 +38,18 @@
           outlined
            />
 
+          <v-alert
+            border="right"
+            colored-border
+            v-bind:type = errorMsgOk
+            elevation="2"
+            v-show="errorMsgVisible"
+            >{{errorMsg}}</v-alert>
+
             <v-btn
               depressed
               color="success"
+              @click="addNumber"
             >
             Добавить номер
           </v-btn>
@@ -49,14 +60,73 @@
 </template>
 
 <script>
+import axios from 'axios';
+import {mapGetters} from 'vuex'
 export default {
   data() {
     return {
       dataOfNumber: {
-        name:"",
+        number:"",
         email:"",
         phone:"",
         sts:""
+      },
+
+      requiredRules:[
+          value => !!value || 'Должно быть заполнено.'
+      ],
+            
+      errorMsg:"Заполните все обязательные поля помеченные *",
+      errorMsgOk: "error",
+      errorMsgVisible:false
+    }
+  },
+
+  computed: {
+    ...mapGetters (["REST_API_PREFIX"])
+  },
+
+  methods:{
+    addNumber() {
+      this.errorMsgVisible = false;
+      if (this.$refs.addOneNumber.validate()) {         
+                axios.get(this.REST_API_PREFIX + 'add_one_number',
+                {
+                    params: {
+                        number: this.dataOfNumber.number,
+                        email: this.dataOfNumber.email,
+                        phone: this.dataOfNumber.phone,
+                        sts: this.dataOfNumber.sts
+                    }
+                })
+                .then( (resp) => {
+                    this.$refs.addOneNumber.reset()
+                    this.errorMsg = "Вы успешно добавили номер."
+                    this.errorMsgOk = "success"
+                    this.errorMsgVisible = true
+
+                    console.log(resp);
+                })
+
+                .catch((error) => {
+                    let rezText = "";
+                    if (error.response)
+                    {
+                        rezText = error.response.data.message;
+                    } else 
+                    if (error.request) {
+                        rezText = error.message;
+                    } else {
+                        rezText = error.message;
+                    }
+                    
+                    console.log(error.config);
+                    this.errorMsg = rezText;
+                    this.errorMsgVisible = true;
+                });
+      } else {
+        this.errorMsg = "Заполните все обязательные поля";
+        this.errorMsgVisible = true;
       }
     }
   }

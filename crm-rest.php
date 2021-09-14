@@ -25,10 +25,8 @@ function user_autorization( WP_REST_Request $request) {
 	
 	$autinfo = json_decode($request["autinfo"], true);
 	
-	if (!empty($autinfo))
-		$autinfo = $request["autinfo"];
 
-	if (empty($autinfo)) return new WP_Error( 'no_user_data', 'Учетные данные не переданы.', [ 'status' => 403 ] );
+	if (empty($autinfo)) return new WP_Error( 'no_user_data', 'Учетные данные не переданы.', [ 'status' => 408 ] );
 	
 	$mail = $autinfo["mail"];
 	$password = $autinfo["pass"];
@@ -42,7 +40,7 @@ function user_autorization( WP_REST_Request $request) {
 
 		if (!empty($user_feeld)) {
 			if (empty($user_feeld[0]->autorize))
-			return new WP_Error( 'no_checed_user', 'Ваша учетная запись еще не активирована администартором.', [ 'status' => 403 ] );
+			return new WP_Error( 'no_checed_user', 'Ваша учетная запись еще не активирована администартором.', [ 'status' => 401 ] );
 			
 			$updateRez = $serviceBase->update("service_users",
 				array(
@@ -64,7 +62,7 @@ function user_autorization( WP_REST_Request $request) {
 			
 
 		} else {
-			return new WP_Error( 'no_user', 'Пользоватея с такими данными нет в системе.', [ 'status' => 403 ] );
+			return new WP_Error( 'no_user', 'Пользоватея с такими данными нет в системе.', [ 'status' => 402 ] );
 		}
 }
 
@@ -202,6 +200,72 @@ function get_getregister( WP_REST_Request $request ){
 		return new WP_Error( 'no_inser_user', 'При регистрации возникли ошибки попробуйте позднее', [ 'status' => 403 ] );
 	else 
 		return array("result" => true);
+}
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/add_one_number', array(
+		'methods'  => 'GET',
+		'callback' => 'add_one_number',
+		'args' => array(
+			'number' => array(
+				'default'           => "",
+				'required'          => true,        		
+			),
+
+			'mail' => array(
+				'default'           => "",
+				'required'          => true,        		
+			),
+
+			'phone' => array(
+				'default'           => "",      		
+			),
+
+			'sts' => array(
+				'default'           => "",      		
+			),
+		),
+	) );
+});
+
+// https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/add_one_number?number=м048уе46&mail=asmi046@gmail.com
+function add_one_number( WP_REST_Request $request ){
+
+	$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+
+	$addResult = $serviceBase->insert('service_number', array(
+		"number" => $request["number"],
+		"email" => $request["mail"],
+		"phone" => $request["phone"],
+		"sts" => $request["sts"]
+	));
+	
+	if (empty($addResult))
+		return new WP_Error( 'no_inser_number', 'При добавлении номера возникла ошибка', [ 'status' => 403 ] );
+	else 
+		return array("result" => true);
+}
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/add_one_numbers', array(
+		'methods'  => 'POST',
+		'callback' => 'add_one_numbers',
+		'args' => array(
+			'numbersfile' => array(
+				'default'           => null,
+				'required'          => true,        		
+			)
+		),
+	) );
+});
+
+// https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/add_one_numbers
+function add_one_numbers( WP_REST_Request $request ){
+	
+	// $r = print_r( $_FILES["numbersfile"], true);
+
+	return $request["numbersfile"];
+	// return array("send" => $r);
 }
 
 
