@@ -5,6 +5,22 @@ define("BI_SERVICE_USER_NAME", "manist1h_auscrm");
 define("BI_SERVICE_USER_PASS", "N%034F0y");
 define("BI_SERVICE_DB_HOST", "localhost");
 
+function get_number_info($number) {
+	$token = "T2yJ1XQqmL2HYMCwZkUysagGl4x6htqm";
+	$url = "https://ap.mosbot.ru/api/passes.json";
+	// return json_decode(file_get_contents("http://httpbin.org/get"), true);
+	
+	$opts = array(
+			'method'  => 'GET',
+			'user_agent '  => "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2) Gecko/20100301 Ubuntu/9.10 (karmic) Firefox/3.6",
+
+	);
+	
+	$context  = stream_context_create($opts);
+
+	return json_decode(file_get_contents($url."?apikey=".$token."&truck_num=".$number, false, $context), true);
+}
+
 add_action( 'rest_api_init', function () {
 register_rest_route( 'lscrm/v2', '/userautorization', array(
 		'methods'  => 'GET',
@@ -250,23 +266,59 @@ add_action( 'rest_api_init', function () {
 	register_rest_route( 'lscrm/v2', '/add_one_numbers', array(
 		'methods'  => 'POST',
 		'callback' => 'add_one_numbers',
-		// 'args' => array(
-		// 	'numbersfile' => array(
-		// 		'default'           => null,
-		// 		'required'          => true,        		
-		// 	)
-		// ),
 	) );
 });
 
 // https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/add_one_numbers
 function add_one_numbers( WP_REST_Request $request ){
 	
-	// $r = print_r( $_FILES["numbersfile"], true);
+	$fileinfo = $request->get_file_params();
 
-	return $request->get_file_params();
-	// return array("send" => $r);
+	$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+
+	$numbers = array();
+
+	$row = 1;
+	if (($handle = fopen($fileinfo["numbersfile"]["tmp_name"], "r")) !== FALSE) {
+		while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
+			
+
+			$addResult = $serviceBase->insert('service_number', array(
+				"number" => mb_convert_encoding($data[1], "UTF-8", "WINDOWS-1251"),
+				"email" => mb_convert_encoding($data[0], "UTF-8", "WINDOWS-1251"),
+			));
+
+			$numbers[] = array(
+				"number" => mb_convert_encoding($data[1], "UTF-8", "WINDOWS-1251"),
+				"email" => mb_convert_encoding($data[0], "UTF-8", "WINDOWS-1251"),
+				"result" => $addResult
+			);
+		}
+		fclose($handle);
+	}
+
+	return $numbers;
 }
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/number_info', array(
+		'methods'  => 'GET',
+		'callback' => 'number_info',
+		'args' => array(
+			'number' => array(
+				'default'           => "",
+				'required'          => true,        		
+			)
+		),
+	) );
+	});
+	
+	//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/number_info?number=Х983ХК750
+	function number_info( WP_REST_Request $request) {
+
+		return get_number_info($request["number"]); 
+	
+	}
 
 
 ?>

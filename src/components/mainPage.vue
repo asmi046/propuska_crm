@@ -42,7 +42,7 @@
                     <v-data-table 
                     locale="ru-RU"
                     :headers="headers"
-                    :items="desserts"
+                    :items="numberItem"
                     :search="search"
                     :footer-props="{
                         itemsPerPageText:'Записей на странице',
@@ -84,7 +84,8 @@ export default {
                 {text:'Серия', value: 'seria'},
                 {text:'Тип', value: 'type'},
                 {text:'Осталось дней', value: 'deycount'},
-            ]
+            ],
+            numberItem: []
         }
     }
 }

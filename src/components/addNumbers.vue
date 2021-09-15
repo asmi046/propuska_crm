@@ -15,6 +15,7 @@
             dense
             ref="mFiles"
             v-model="filename"
+            accept=".csv"
           ></v-file-input>
 
           <v-btn
@@ -25,9 +26,26 @@
             Добавить номера
           </v-btn>
 
-
-
         </v-form>
+      </v-col>
+    </v-row>
+    
+    <v-row>
+      <v-col>
+        <v-progress-linear
+          v-show="loadingShow"
+          indeterminate
+          color="green"
+        ></v-progress-linear>
+
+        <div class="loadetNumberList">
+          <div v-for="(item, i) in resultAdding" :key="i" class="element">
+            <span>{{item.number}}</span>
+            <span>{{item.email}}</span>
+            <span :class = "(item.result == false)?'clRed':'clGreen'">{{(item.result == false)?"Уже есть в базе":"Добавлен" }}</span>
+          </div>
+        </div>
+
       </v-col>
     </v-row>
   </v-container>
@@ -40,7 +58,9 @@ export default {
 
 data() {
     return {
-      filename:null
+      filename:null,
+      loadingShow:false,
+      resultAdding:[]
     }
 },
 
@@ -68,17 +88,22 @@ data() {
 
         // xhr.send(fd);
 
+        this.loadingShow = true;
+        this.resultAdding = [];
         axios.post(this.REST_API_PREFIX + 'add_one_numbers', fd, {
                 headers: {
                   'Content-Type': 'multipart/form-data'
                 }
             })
             .then(response => {
-                console.log("Success!");
-                console.log({ response });
+                console.log("Success!")
+                console.log({ response })
+                this.resultAdding = response.data
+                this.loadingShow = false
             })
             .catch(error => {
                 console.log({ error });
+                this.loadingShow = false;
             });
       }
     }
@@ -87,5 +112,23 @@ data() {
 </script>
 
 <style>
+.loadetNumberList {
+  display: flex;
+  width:100%;
+  flex-direction: column;
+}
 
+.loadetNumberList .element {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.loadetNumberList .element .clRed{
+  color:red;
+}
+
+.loadetNumberList .element .clGreen{
+  color:green;
+}
 </style>
