@@ -53,8 +53,20 @@ data() {
     addNumbers() {
       if (this.$refs.multiaddForm.validate()) {
         let fd =  new FormData();
-         fd.append('numbersfile', "222")
+         fd.append('numbersfile', this.filename)
        
+        // var xhr = new XMLHttpRequest();
+        // xhr.open('POST', this.REST_API_PREFIX + 'add_one_numbers', true);
+        // xhr.setRequestHeader("Content-Type","multipart/form-data")
+        // xhr.onload = function(e) {
+        //   console.log(e);
+        // };
+        
+        // xhr.onerror = function(e) {
+        //   console.log(e);
+        // };
+
+        // xhr.send(fd);
 
         axios.post(this.REST_API_PREFIX + 'add_one_numbers', fd, {
                 headers: {

@@ -250,12 +250,12 @@ add_action( 'rest_api_init', function () {
 	register_rest_route( 'lscrm/v2', '/add_one_numbers', array(
 		'methods'  => 'POST',
 		'callback' => 'add_one_numbers',
-		'args' => array(
-			'numbersfile' => array(
-				'default'           => null,
-				'required'          => true,        		
-			)
-		),
+		// 'args' => array(
+		// 	'numbersfile' => array(
+		// 		'default'           => null,
+		// 		'required'          => true,        		
+		// 	)
+		// ),
 	) );
 });
 
@@ -264,7 +264,7 @@ function add_one_numbers( WP_REST_Request $request ){
 	
 	// $r = print_r( $_FILES["numbersfile"], true);
 
-	return $request["numbersfile"];
+	return $request->get_file_params();
 	// return array("send" => $r);
 }
 
