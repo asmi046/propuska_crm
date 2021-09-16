@@ -9,6 +9,9 @@
     <v-row>
       <v-col>
         <v-form ref = "multiaddForm">
+          <p>
+            Загрузка большого колличества номеров из svg файла. Выберите файл и нажмите кнопку - Добавить номера
+          </p>
           <v-file-input
             label="Выберите файл"
             outlined
@@ -17,6 +20,15 @@
             v-model="filename"
             accept=".csv"
           ></v-file-input>
+
+            <v-checkbox
+              v-model="checAfterAdd"
+              label="Проверить после добавления"
+              color="success"
+              value="chec"
+              hide-details
+              class = "mb-4"
+            ></v-checkbox>
 
           <v-btn
               depressed
@@ -60,6 +72,7 @@ data() {
     return {
       filename:null,
       loadingShow:false,
+      checAfterAdd:true,
       resultAdding:[]
     }
 },
@@ -74,6 +87,7 @@ data() {
       if (this.$refs.multiaddForm.validate()) {
         let fd =  new FormData();
          fd.append('numbersfile', this.filename)
+         fd.append('chec', this.checAfterAdd)
        
         // var xhr = new XMLHttpRequest();
         // xhr.open('POST', this.REST_API_PREFIX + 'add_one_numbers', true);

@@ -8,17 +8,8 @@ define("BI_SERVICE_DB_HOST", "localhost");
 function get_number_info($number) {
 	$token = "T2yJ1XQqmL2HYMCwZkUysagGl4x6htqm";
 	$url = "https://ap.mosbot.ru/api/passes.json";
-	// return json_decode(file_get_contents("http://httpbin.org/get"), true);
-	
-	$opts = array(
-			'method'  => 'GET',
-			'user_agent '  => "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2) Gecko/20100301 Ubuntu/9.10 (karmic) Firefox/3.6",
 
-	);
-	
-	$context  = stream_context_create($opts);
-
-	return json_decode(file_get_contents($url."?apikey=".$token."&truck_num=".$number, false, $context), true);
+	return json_decode(file_get_contents($url."?apikey=".$token."&truck_num=".urlencode($number)));
 }
 
 add_action( 'rest_api_init', function () {
@@ -262,10 +253,19 @@ function add_one_number( WP_REST_Request $request ){
 		return array("result" => true);
 }
 
+// 
+// Массовая проверка номеров
+// 
+
 add_action( 'rest_api_init', function () {
 	register_rest_route( 'lscrm/v2', '/add_one_numbers', array(
 		'methods'  => 'POST',
 		'callback' => 'add_one_numbers',
+		'args' => array(
+			'chec' => array(
+				'default'           => "0",        		
+			),
+		),
 	) );
 });
 
@@ -282,16 +282,37 @@ function add_one_numbers( WP_REST_Request $request ){
 	if (($handle = fopen($fileinfo["numbersfile"]["tmp_name"], "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
 			
+			$number = mb_convert_encoding($data[1], "UTF-8", "WINDOWS-1251");
+			$email = mb_convert_encoding($data[0], "UTF-8", "WINDOWS-1251");
 
-			$addResult = $serviceBase->insert('service_number', array(
-				"number" => mb_convert_encoding($data[1], "UTF-8", "WINDOWS-1251"),
-				"email" => mb_convert_encoding($data[0], "UTF-8", "WINDOWS-1251"),
-			));
+			$addingArray = array(
+				"number" => $number,
+				"email" => $email,
+			);
+
+			// $elemAdd = "";
+
+			if (!empty($request["chec"])) {
+
+				$aus_chec_rez = get_number_info($number);
+				$addingArray["status"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->status;
+				$addingArray["seria"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->series;
+				$addingArray["type"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_zone;
+				$addingArray["time"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass;
+				$addingArray["pass_number"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_number;
+				$addingArray["chec_time"] =  date("Y-m-d H:i:s");
+				$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_from));
+				$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_to));
+
+			}
+
+			$addResult = $serviceBase->insert('service_number', $addingArray);
 
 			$numbers[] = array(
-				"number" => mb_convert_encoding($data[1], "UTF-8", "WINDOWS-1251"),
-				"email" => mb_convert_encoding($data[0], "UTF-8", "WINDOWS-1251"),
-				"result" => $addResult
+				"number" => $number,
+				"email" => $email,
+				"result" => $addResult,
+				
 			);
 		}
 		fclose($handle);
@@ -299,6 +320,10 @@ function add_one_numbers( WP_REST_Request $request ){
 
 	return $numbers;
 }
+
+// 
+// Проверка номера через сервис
+// 
 
 add_action( 'rest_api_init', function () {
 	register_rest_route( 'lscrm/v2', '/number_info', array(
