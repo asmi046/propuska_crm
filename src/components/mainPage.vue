@@ -37,6 +37,26 @@
                         
                 </v-row>
             </v-form>
+
+            <v-row class = "d-flex justify-space-between">
+                <v-col sm = "6" cols = "12" class = "d-flex">
+                    <v-pagination class = "ml-0"
+                        v-model="pageNumber"
+                        :length="pageNumeratorLength"
+                        :total-visible="5"
+                    ></v-pagination>
+                </v-col>
+
+                <v-col sm = "2" cols = "12" class = "d-flex">
+                    <v-select
+                        v-model="countInPage"
+                        :items="[5, 20, 50, 100, 200]"
+                        label="На странице"
+                    ></v-select>
+                    
+                </v-col>
+            </v-row>
+
             <v-row >
                 <v-col>
                     <v-data-table 
@@ -51,6 +71,7 @@
                     ></v-data-table>
                 </v-col>
             </v-row>
+            
         </v-container>
 </template>
 
@@ -58,6 +79,9 @@
 export default {
     data() {
         return {
+            pageNumber:1,
+            pageNumeratorLength:15,
+            countInPage:50,
             showLoadData:false,
             search:'', 
             filterSelectItems:[

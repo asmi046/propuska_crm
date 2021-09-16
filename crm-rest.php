@@ -303,7 +303,8 @@ function add_one_numbers( WP_REST_Request $request ){
 				$addingArray["chec_time"] =  date("Y-m-d H:i:s");
 				$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_from));
 				$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_to));
-
+				$addingArray["anul_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date));
+			
 			}
 
 			$addResult = $serviceBase->insert('service_number', $addingArray);
@@ -345,5 +346,42 @@ add_action( 'rest_api_init', function () {
 	
 	}
 
+
+// 
+// Проверка номера через сервис
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/get_number_table', array(
+		'methods'  => 'GET',
+		'callback' => 'get_number_table',
+		'args' => array(
+			'page' => array(
+				'default'           =>1,
+				'required'          => true,        		
+			),
+			
+			'countinpage' => array(
+				'default'           => 3,
+				'required'          => true,        		
+			)
+		),
+	) );
+	});
+	
+	//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/get_number_table?page=1&countinpage=5
+	function get_number_table( WP_REST_Request $request) {
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+		
+		$ofset = (float)$request["countinpage"] * (float)$request["page"];
+		
+		$count = $serviceBase->get_results("SELECT count(*) as `ncount` FROM `service_number`");
+		$result = $serviceBase->get_results("SELECT * FROM `service_number` LIMIT ".$request["countinpage"]." OFFSET ".$ofset);
+		
+		return array(
+			"result" => $result, 
+			"count" => $count
+		);
+	}	
 
 ?>
