@@ -373,14 +373,16 @@ add_action( 'rest_api_init', function () {
 	function get_number_table( WP_REST_Request $request) {
 		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 		
+		$count = $serviceBase->get_results("SELECT count(*) as `ncount` FROM `service_number`");
+
 		$ofset = (float)$request["countinpage"] * (float)$request["page"];
 		
-		$count = $serviceBase->get_results("SELECT count(*) as `ncount` FROM `service_number`");
 		$result = $serviceBase->get_results("SELECT * FROM `service_number` LIMIT ".$request["countinpage"]." OFFSET ".$ofset);
 		
 		return array(
 			"result" => $result, 
-			"count" => $count
+			"count" => $count[0]->ncount,
+			"q" => "SELECT * FROM `service_number` LIMIT ".$request["countinpage"]." OFFSET ".$ofset
 		);
 	}	
 

@@ -15,10 +15,15 @@ export default new Vuex.Store ({
 
         loginState:"autorise", //Окно которое отображаетс на странице авторизации / регистрации
         // Поля для меню приложения
-        showPanel:false
+        showPanel:false,
+        // Список номеров
+        numberList:[]
     },
 
     actions: {
+        updateNumberList(ctx, value){
+            ctx.commit('updateNumberList', value);
+        },
         showedPanel(ctx, value){
             ctx.commit('showedPanel', value);
         },
@@ -37,6 +42,10 @@ export default new Vuex.Store ({
     },
 
     mutations: {
+        updateNumberList(state, newVal) {
+            state.numberList = newVal;
+        },
+
         showedPanel(state, newVal) {
             state.showPanel = newVal;
         },
@@ -57,6 +66,10 @@ export default new Vuex.Store ({
     },
     
     getters: {
+        NUMBER_LIST(state) {
+            return state.numberList;
+        },
+
         SHOW_PANEL(state) {
             return state.showPanel;
         },

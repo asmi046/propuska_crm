@@ -76,6 +76,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+import {mapGetters} from 'vuex'
 export default {
     data() {
         return {
@@ -96,22 +98,59 @@ export default {
             ],
 
             headers: [
-                {text:'Госномер', value: 'gosnumber'},
-                {text:'e-mail', value: 'mail'},
-                {text:'Время', value: 'austime'},
+                {text:'Госномер', value: 'number'},
+                {text:'e-mail', value: 'email'},
+                {text:'Время', value: 'time'},
                 {text:'Статус', value: 'status'},
-                {text:'Системный статус', value: 'sysstatus'},
-                {text:'Проверен', value: 'lastchec'},
-                {text:'Дата начала', value: 'startdata'},
-                {text:'Дата окончания', value: 'okdata'},
-                {text:'Анулирован', value: 'onul'},
+                {text:'Системный статус', value: 'sys_status'},
+                {text:'Проверен', value: 'chec_time'},
+                {text:'Дата начала', value: 'start_data'},
+                {text:'Дата окончания', value: 'end_data'},
+                {text:'Анулирован', value: 'anul_data'},
                 {text:'Серия', value: 'seria'},
                 {text:'Тип', value: 'type'},
-                {text:'Осталось дней', value: 'deycount'},
+                {text:'Номер', value: 'pass_number'},
+                {text:'Осталось дней', value: 'dey_count'},
             ],
             numberItem: []
         }
+    },
+
+    computed: {
+        ...mapGetters (["REST_API_PREFIX"])
+    },
+
+    mounted: function() {
+        axios.get(this.REST_API_PREFIX + 'get_number_table',
+        {
+                    params: {
+                        page: this.pageNumber-1,
+                        countinpage: this.countInPage,
+                    }
+        })
+        .then( (resp) => {
+                 this.numberItem = resp.data.result
+
+                console.log(resp);
+        })
+
+        .catch((error) => {
+                    let rezText = "";
+                    if (error.response)
+                    {
+                        rezText = error.response.data.message;
+                    } else 
+                    if (error.request) {
+                        rezText = error.message;
+                    } else {
+                        rezText = error.message;
+                    }
+                    
+                    console.log(error.config);
+                    console.log(rezText);
+        });
     }
+
 }
 </script>
 
