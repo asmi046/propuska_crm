@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import axios from 'axios';
 import Vuex from 'vuex'
 
 Vue.use(Vuex)
@@ -21,8 +22,33 @@ export default new Vuex.Store ({
     },
 
     actions: {
-        updateNumberList(ctx, value){
-            ctx.commit('updateNumberList', value);
+        updateNumberList(ctx){
+            axios.get(ctx.state.rest_api_prefix + 'get_number_table',
+            {
+                params: {
+                    filter: "", 
+                }
+            })
+            .then( (resp) => {
+                ctx.commit('updateNumberList', resp.data.result);
+            })
+            .catch((error) => {
+                        let rezText = "";
+                        if (error.response)
+                        {
+                            rezText = error.response.data.message;
+                        } else 
+                        if (error.request) {
+                            rezText = error.message;
+                        } else {
+                            rezText = error.message;
+                        }
+                        
+                        console.log(error.config);
+                        console.log(rezText);
+            });
+
+            
         },
         showedPanel(ctx, value){
             ctx.commit('showedPanel', value);

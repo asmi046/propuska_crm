@@ -38,31 +38,12 @@
                 </v-row>
             </v-form>
 
-            <v-row class = "d-flex justify-space-between">
-                <v-col sm = "6" cols = "12" class = "d-flex">
-                    <v-pagination class = "ml-0"
-                        v-model="pageNumber"
-                        :length="pageNumeratorLength"
-                        :total-visible="5"
-                    ></v-pagination>
-                </v-col>
-
-                <v-col sm = "2" cols = "12" class = "d-flex">
-                    <v-select
-                        v-model="countInPage"
-                        :items="[5, 20, 50, 100, 200]"
-                        label="На странице"
-                    ></v-select>
-                    
-                </v-col>
-            </v-row>
-
             <v-row >
                 <v-col>
                     <v-data-table 
                     locale="ru-RU"
                     :headers="headers"
-                    :items="numberItem"
+                    :items="this.NUMBER_LIST"
                     :search="search"
                     :footer-props="{
                         itemsPerPageText:'Записей на странице',
@@ -76,7 +57,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import {mapGetters} from 'vuex'
 export default {
     data() {
@@ -111,49 +91,41 @@ export default {
                 {text:'Тип', value: 'type'},
                 {text:'Номер', value: 'pass_number'},
                 {text:'Осталось дней', value: 'dey_count'},
-            ],
-            numberItem: []
+            ]
         }
     },
 
     computed: {
-        ...mapGetters (["REST_API_PREFIX"])
+        ...mapGetters (["REST_API_PREFIX", "NUMBER_LIST"])
     },
 
     mounted: function() {
-        axios.get(this.REST_API_PREFIX + 'get_number_table',
-        {
-                    params: {
-                        page: this.pageNumber-1,
-                        countinpage: this.countInPage,
-                    }
-        })
-        .then( (resp) => {
-                 this.numberItem = resp.data.result
-
-                console.log(resp);
-        })
-
-        .catch((error) => {
-                    let rezText = "";
-                    if (error.response)
-                    {
-                        rezText = error.response.data.message;
-                    } else 
-                    if (error.request) {
-                        rezText = error.message;
-                    } else {
-                        rezText = error.message;
-                    }
-                    
-                    console.log(error.config);
-                    console.log(rezText);
-        });
+        this.$store.dispatch('updateNumberList');
     }
 
 }
 </script>
 
 <style>
+ .v-data-table-header {
+     background-color: gray;
+     color: white;
+ }
 
+
+.v-data-table-header th{
+    vertical-align: top;
+    padding-top: 3px!important;
+}
+
+ .v-data-table-header span{ 
+     color: white;
+     font-weight: normal;
+ }
+
+ @media (max-width: 640px) {
+    .v-data-table-header {
+     background-color: white;
+    }
+ }
 </style>

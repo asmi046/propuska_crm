@@ -356,15 +356,11 @@ add_action( 'rest_api_init', function () {
 		'methods'  => 'GET',
 		'callback' => 'get_number_table',
 		'args' => array(
-			'page' => array(
-				'default'           =>1,
+			'filter' => array(
+				'default'           => "14dey",
 				'required'          => true,        		
 			),
 			
-			'countinpage' => array(
-				'default'           => 3,
-				'required'          => true,        		
-			)
 		),
 	) );
 	});
@@ -377,12 +373,11 @@ add_action( 'rest_api_init', function () {
 
 		$ofset = (float)$request["countinpage"] * (float)$request["page"];
 		
-		$result = $serviceBase->get_results("SELECT * FROM `service_number` LIMIT ".$request["countinpage"]." OFFSET ".$ofset);
+		$result = $serviceBase->get_results("SELECT * FROM `service_number`");
 		
 		return array(
 			"result" => $result, 
 			"count" => $count[0]->ncount,
-			"q" => "SELECT * FROM `service_number` LIMIT ".$request["countinpage"]." OFFSET ".$ofset
 		);
 	}	
 
