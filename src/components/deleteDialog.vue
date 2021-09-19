@@ -26,7 +26,7 @@
           <v-btn
             color="red darken-1"
             text
-            @click="deleteDialogParam.closeDialog()"
+            @click="deleteDialogParam.deleteNumber()"
           >
             Удалить
           </v-btn>

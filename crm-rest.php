@@ -384,7 +384,7 @@ add_action( 'rest_api_init', function () {
 
 
 // 
-// Проверка номера через сервис
+// Получение фильтрованного списка номеров
 // 
 
 add_action( 'rest_api_init', function () {
@@ -430,6 +430,57 @@ add_action( 'rest_api_init', function () {
 			"result" => $result, 
 			"q" => $q
 		);
+	}	
+
+// 
+// Удаление номера
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/dell_number', array(
+		'methods'  => 'GET',
+		'callback' => 'dell_number',
+		'args' => array(
+			'number' => array(
+				'default'           => "",
+				'required'          => true, 
+			),
+			'mail' => array(
+				'default'           => "",
+				'required'          => true, 
+			),
+
+			'token' => array(
+				'default'           => "",
+				'required'          => true, 
+			)
+		),
+	) );
+	});
+	
+	//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/dell_number?number=Е268КР53&token=291327&mail=asmi046@gmail.com
+	function dell_number( WP_REST_Request $request) {
+		
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+		
+		$token = $serviceBase->get_results("SELECT `autorizeKey` FROM `service_users` WHERE `mail` = '".$request["mail"]."'");
+	
+
+		if (empty($token))
+			return new WP_Error( 'no_token_incorrect', 'Токен некорректен', [ 'status' => 403 ] );
+
+		if ($token[0]->autorizeKey !== $request["token"]) 
+			return new WP_Error( 'no_token_incorrect', 'Токен некорректен', [ 'status' => 403 ] );
+		
+		
+
+		$dellRez = $serviceBase->delete( 'service_number', array("number" => $request["number"]) );
+	
+		if ($dellRez === false) 
+			return new WP_Error( 'no_delete_number', 'При удалении номера возникли ошибки', [ 'status' => 403 ] );
+		
+		 
+		return array("dell_count" => $dellRez);
 	}	
 
 ?>

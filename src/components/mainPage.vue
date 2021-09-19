@@ -97,8 +97,10 @@
 </template>
 
 <script>
+import axios from 'axios';
 import {mapGetters} from 'vuex'
 import deleteDialog from './deleteDialog.vue';
+import allLibs from '../lib/libs';
 export default {
     components: { deleteDialog },
     data() {
@@ -107,12 +109,43 @@ export default {
         deleteDialogParam: {
             showDialog:false,
             number:"",
-            closeDialog: function() {
-                this.showDialog = false;
+            closeDialog: () => {
+                this.deleteDialogParam.showDialog = false;
             },
 
-            deleteNumber: function() {
+            deleteNumber: () => {
+                console.log(allLibs.getCookie("userlogin"));
+                console.log(allLibs.getCookie("servtoken"));
+                axios.get(this.REST_API_PREFIX + 'dell_number',
+                {
+                    params: {
+                        number: this.deleteDialogParam.number,
+                        mail: allLibs.getCookie("userlogin"),
+                        token: allLibs.getCookie("servtoken"),
+                    }
+                })
+                .then( (resp) => {
+                    console.log(resp);
+                    this.$store.dispatch('updateNumberList',  {status: this.status, type: this.type, search: this.search});
+                    this.deleteDialogParam.showDialog = false;
+                })
 
+                .catch((error) => {
+                    let rezText = "";
+                    if (error.response)
+                    {
+                        rezText = error.response.data.message;
+                    } else 
+                    if (error.request) {
+                        rezText = error.message;
+                    } else {
+                        rezText = error.message;
+                    }
+                    
+                    console.log(error.config);
+                    console.log(rezText);
+                    this.deleteDialogParam.showDialog = false;
+                });
             }
         },     
             showLoadData:false,
