@@ -88,7 +88,6 @@
         methods: {
             toRegister() {
                 this.$store.dispatch('chengeLoginState',  "register");
-                
             }, 
 
             toPassRec() {

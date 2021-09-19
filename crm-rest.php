@@ -269,6 +269,37 @@ add_action( 'rest_api_init', function () {
 	) );
 });
 
+function countDaysBetweenDates($d1, $d2)
+{
+    $d1_ts = strtotime($d1);
+    $d2_ts = strtotime($d2);
+
+    $seconds = $d1_ts - $d2_ts;
+    
+    return floor($seconds / 86400);
+}
+
+function get_status($element) {
+	$deycount = countDaysBetweenDates($element->valid_to, date("Y-m-d H:i:s"));
+	$deycount = ($deycount<0)?0:$deycount;
+	
+
+	$status = "Действует";
+
+	if (!empty($element->cancel_date)) $status = "Анулирован";
+	if (!empty($element->cancel_date) && (strtotime($element->valid_to) == strtotime(date("Y-m-d")))) $status = "Анулирован сегодня";
+	if (empty($deycount)) $status = "Закончился";
+	if (strtotime($element->valid_to) == strtotime(date("Y-m-d"))) $status = "Заканчивается сегодня";
+	if (strtotime($element->valid_to) == (strtotime(date("Y-m-d"))+86400)) $status = "Заканчивается завтра";
+	if (strtotime($element->valid_from) == strtotime(date("Y-m-d"))) $status = "Начинается сегодня";
+	if (strtotime($element->valid_from) == (strtotime(date("Y-m-d"))+86400)) $status = "Начинается завтра";
+
+	return array(
+		"sys_status" => $status,
+		"deycount" => $deycount
+	);
+}
+
 // https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/add_one_numbers
 function add_one_numbers( WP_REST_Request $request ){
 	
@@ -290,20 +321,25 @@ function add_one_numbers( WP_REST_Request $request ){
 				"email" => $email,
 			);
 
-			// $elemAdd = "";
+			$statuses = array();
 
 			if (!empty($request["chec"])) {
 
 				$aus_chec_rez = get_number_info($number);
+
+				$statuses = get_status($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]);
+
 				$addingArray["status"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->status;
 				$addingArray["seria"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->series;
 				$addingArray["type"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_zone;
-				$addingArray["time"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass;
+				$addingArray["time"] =  empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass)?"":$aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass;
 				$addingArray["pass_number"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_number;
 				$addingArray["chec_time"] =  date("Y-m-d H:i:s");
 				$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_from));
 				$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_to));
 				$addingArray["anul_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date));
+				$addingArray["dey_count"] =  $statuses["deycount"];
+				$addingArray["sys_status"] =  $statuses["sys_status"];
 			
 			}
 
@@ -313,7 +349,7 @@ function add_one_numbers( WP_REST_Request $request ){
 				"number" => $number,
 				"email" => $email,
 				"result" => $addResult,
-				
+				"statuses" => $statuses
 			);
 		}
 		fclose($handle);
@@ -356,9 +392,15 @@ add_action( 'rest_api_init', function () {
 		'methods'  => 'GET',
 		'callback' => 'get_number_table',
 		'args' => array(
-			'filter' => array(
-				'default'           => "14dey",
-				'required'          => true,        		
+			'status' => array(
+				'default'           => "",
+			),
+			'type' => array(
+				'default'           => "",
+			),
+
+			'searchstr' => array(
+				'default'           => "",
 			),
 			
 		),
@@ -371,13 +413,22 @@ add_action( 'rest_api_init', function () {
 		
 		$count = $serviceBase->get_results("SELECT count(*) as `ncount` FROM `service_number`");
 
-		$ofset = (float)$request["countinpage"] * (float)$request["page"];
 		
-		$result = $serviceBase->get_results("SELECT * FROM `service_number`");
+		$status = empty($request["status"])?"%":$request["status"];
+		$type = empty($request["type"])?"%":$request["type"];
+		$searchstr = empty($request["searchstr"])?"%":$request["searchstr"];
+
+		$q = "SELECT * FROM `service_number` WHERE `sys_status` LIKE '".$status."' AND `seria` LIKE '".$type."' AND `pass_number` LIKE '".$searchstr."' AND `number` LIKE '".$searchstr."'  AND `email` LIKE '".$searchstr."'";
+		
+		$result = $serviceBase->get_results($q);
+
+		$statuses = $serviceBase->get_results("SELECT `sys_status` as `text`, count(*) as `count` FROM `service_number` GROUP BY `sys_status`");
 		
 		return array(
-			"result" => $result, 
+			"statuses" => $statuses,
 			"count" => $count[0]->ncount,
+			"result" => $result, 
+			"q" => $q
 		);
 	}	
 

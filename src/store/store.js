@@ -18,19 +18,25 @@ export default new Vuex.Store ({
         // Поля для меню приложения
         showPanel:false,
         // Список номеров
-        numberList:[]
+        numberList:[],
+        statuses:[],
+        curentStatus:""
     },
 
     actions: {
-        updateNumberList(ctx){
+        updateNumberList(ctx, param){
             axios.get(ctx.state.rest_api_prefix + 'get_number_table',
             {
                 params: {
-                    filter: "", 
+                    status: param.status, 
+                    type: param.type, 
+                    searchstr: param.searchstr, 
                 }
             })
             .then( (resp) => {
                 ctx.commit('updateNumberList', resp.data.result);
+                ctx.commit('updateStatusesList', resp.data.statuses);
+                console.log(resp)
             })
             .catch((error) => {
                         let rezText = "";
@@ -72,6 +78,10 @@ export default new Vuex.Store ({
             state.numberList = newVal;
         },
 
+        updateStatusesList(state, newVal) {
+            state.statuses = newVal;
+        },
+
         showedPanel(state, newVal) {
             state.showPanel = newVal;
         },
@@ -92,6 +102,10 @@ export default new Vuex.Store ({
     },
     
     getters: {
+        STATUSES(state) {
+            return state.statuses;
+        },
+
         NUMBER_LIST(state) {
             return state.numberList;
         },

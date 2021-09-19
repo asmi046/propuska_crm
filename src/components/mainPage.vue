@@ -11,9 +11,13 @@
                     
                             <v-col sm = "3" cols = "12" >
                                 <v-select
-                                :items="filterSelectItems"
+                                :items="STATUSES"
                                 label="Выберите фильтр"
                                 solo
+                                :item-text="item => item.text +'  ('+ item.count+')'"
+                                item-value="text"
+                                @change="updateFilter"
+                                v-model="status"
                                 ></v-select>
                             </v-col>
                             
@@ -22,17 +26,27 @@
                                 :items="typeSelectItems"
                                 label="Выберите тип пропуска"
                                 solo
+                                @change="updateFilter"
+                                v-model="type"
                                 ></v-select>
                             </v-col>
 
-                            <v-col sm = "6" cols = "12" >
+                            <v-col sm = "4" cols = "12" >
                                 <v-text-field
                                     v-model="search"
                                     append-icon="mdi-magnify"
                                     label="Поиск"
                                     solo
                                     hide-details
+                                    @keydown="updateFilter"
                                 ></v-text-field>
+                            </v-col>
+
+                            <v-col sm = "2" cols = "12" >
+                                <v-btn width = "100%" height="48" @click="clearFilter()" depressed>
+                                    <v-icon class = "mr-2">mdi-close</v-icon>
+                                    Сбросить                       
+                                </v-btn>
                             </v-col>
                         
                 </v-row>
@@ -49,23 +63,62 @@
                         itemsPerPageText:'Записей на странице',
                         pageText: '{0}-{1} из {2}'
                     }"
-                    ></v-data-table>
+                    >
+                    
+                    <template v-slot:item.action="{ item }">
+                        <v-btn height = "28" class = "ma-1 pl-2 pr-2 action-button" @click="numberInfo(item)" color="info" depressed>
+                            <v-icon class = "mr-2">mdi-information-outline</v-icon>
+                            Подробнее                       
+                        </v-btn>
+                        
+                        <v-btn height = "28" class = "ma-1 pl-2 pr-2 action-button" @click="updateNumber(item)" color="success" depressed>
+                            <v-icon class = "mr-2">mdi-update</v-icon>
+                            Обновить                       
+                        </v-btn>
+                        
+                        <v-btn height = "28" class = "ma-1  pl-2 pr-2 action-button" @click="updateNumber(item)" color="success" depressed>
+                            <v-icon class = "mr-2">mdi-file-edit-outline</v-icon>
+                            Изменить                       
+                        </v-btn>
+                        
+                        <v-btn height = "28" class = "ma-1 pl-2 pr-2 action-button" @click="deleteNumber(item)" color="error" depressed>
+                            <v-icon class = "mr-2">mdi-delete</v-icon>
+                            Удалить                       
+                        </v-btn>
+                    
+                    </template>
+                    
+                    </v-data-table>
                 </v-col>
             </v-row>
             
+            <delete-dialog :delete-dialog-param = "deleteDialogParam"></delete-dialog>
         </v-container>
 </template>
 
 <script>
 import {mapGetters} from 'vuex'
+import deleteDialog from './deleteDialog.vue';
 export default {
+    components: { deleteDialog },
     data() {
         return {
-            pageNumber:1,
-            pageNumeratorLength:15,
-            countInPage:50,
+  
+        deleteDialogParam: {
+            showDialog:false,
+            number:"",
+            closeDialog: function() {
+                this.showDialog = false;
+            },
+
+            deleteNumber: function() {
+
+            }
+        },     
             showLoadData:false,
             search:'', 
+            status:'', 
+            type:'', 
             filterSelectItems:[
                 'Все (630)',
                 'Действует (300)',
@@ -91,22 +144,53 @@ export default {
                 {text:'Тип', value: 'type'},
                 {text:'Номер', value: 'pass_number'},
                 {text:'Осталось дней', value: 'dey_count'},
+                {text:'Действие', value: 'action'},
             ]
         }
     },
 
     computed: {
-        ...mapGetters (["REST_API_PREFIX", "NUMBER_LIST"])
+        ...mapGetters (["REST_API_PREFIX", "NUMBER_LIST", "STATUSES"])
     },
 
     mounted: function() {
-        this.$store.dispatch('updateNumberList');
+        this.$store.dispatch('updateNumberList',  {status: this.status, type: this.type, search: this.search});
+    },
+
+    methods:{
+        clearFilter() {
+            this.status = ""; 
+            this.type = ""; 
+            this.search = "";
+            this.$store.dispatch('updateNumberList',  {status: this.status, type: this.type, search: this.search});
+        },
+        updateFilter() {
+            this.$store.dispatch('updateNumberList', {status: this.status, type: this.type, search: this.search});
+        },
+
+        numberInfo() {
+
+        },
+        updateNumber() {
+
+        },
+        chengeNumber() {
+
+        },
+        deleteNumber(item) {
+            this.deleteDialogParam.number = item.number;
+            this.deleteDialogParam.showDialog = true;
+
+        }
     }
+
+    
 
 }
 </script>
 
 <style>
+
  .v-data-table-header {
      background-color: gray;
      color: white;
