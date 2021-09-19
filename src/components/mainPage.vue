@@ -66,7 +66,7 @@
                     >
                     
                     <template v-slot:item.action="{ item }">
-                        <v-btn height = "28" class = "ma-1 pl-2 pr-2 action-button" @click="numberInfo(item)" color="info" depressed>
+                        <v-btn @click="$router.push({ name: 'checknumber', params: {number: item.number} })" height = "28" class = "ma-1 pl-2 pr-2 action-button"  color="info" depressed>
                             <v-icon class = "mr-2">mdi-information-outline</v-icon>
                             Подробнее                       
                         </v-btn>
@@ -76,7 +76,7 @@
                             Обновить                       
                         </v-btn>
                         
-                        <v-btn height = "28" class = "ma-1  pl-2 pr-2 action-button" @click="updateNumber(item)" color="success" depressed>
+                        <v-btn @click="$router.push({ name: 'updatenumber', params: {number: item.number} })" height = "28" class = "ma-1  pl-2 pr-2 action-button"  color="success" depressed>
                             <v-icon class = "mr-2">mdi-file-edit-outline</v-icon>
                             Изменить                       
                         </v-btn>

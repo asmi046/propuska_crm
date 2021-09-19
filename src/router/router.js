@@ -5,6 +5,8 @@ import mainPage from '../components/mainPage'
 import addNumber from '../components/addNumber'
 import addNumbers from '../components/addNumbers'
 import autoriseComponent from '../components/autoriseComponent'
+import checkNumber from '../components/checkNumber'
+import chengeNumber from '../components/chengeNumber'
 
 import store from '../store/store';
 import allLibs from '../lib/libs'
@@ -37,9 +39,19 @@ let router = new VueRouter ( {
                 name: 'addfull',
                 meta: {title: "Пакетное добавление номеров"},
                 component: addNumbers
+            },
+            {
+                path: '/check_number/:number?',
+                name: 'checknumber',
+                meta: {title: "Проверка номеров"},
+                component: checkNumber
+            },
+            {
+                path: '/update_number/:number?',
+                name: 'updatenumber',
+                meta: {title: "Изменить номер"},
+                component: chengeNumber
             }
-
-
             
         ]
     }

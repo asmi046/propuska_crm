@@ -254,6 +254,62 @@ function add_one_number( WP_REST_Request $request ){
 }
 
 // 
+// Обновление информации о номере
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/update_number_info', array(
+		'methods'  => 'GET',
+		'callback' => 'update_number_info',
+		'args' => array(
+			'id' => array(
+				'default'           => "",
+				'required'          => true,        		
+			),
+
+			'number' => array(
+				'default'           => "",
+				'required'          => true,        		
+			),
+
+			'mail' => array(
+				'default'           => "",
+				'required'          => true,        		
+			),
+
+			'phone' => array(
+				'default'           => "",      		
+			),
+
+			'sts' => array(
+				'default'           => "",      		
+			),
+		),
+	) );
+});
+
+// https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/add_one_number?number=м048уе46&mail=asmi046@gmail.com
+function update_number_info( WP_REST_Request $request ){
+
+	$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+
+	$addResult = $serviceBase->update('service_number', array(
+		"number" => $request["number"],
+		"email" => $request["email"],
+		"phone" => $request["phone"],
+		"sts" => $request["sts"]
+	),
+
+	array("id" => $request["id"])
+);
+	
+	if (empty($addResult))
+		return new WP_Error( 'no_update_number', 'При обновлении информации о номере возникла ошибка', [ 'status' => 403 ] );
+	else 
+		return array("result" => true);
+}
+
+// 
 // Массовая проверка номеров
 // 
 
