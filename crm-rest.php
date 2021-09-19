@@ -483,4 +483,51 @@ add_action( 'rest_api_init', function () {
 		return array("dell_count" => $dellRez);
 	}	
 
+// 
+// Обновление информации по номеру
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/update_number', array(
+		'methods'  => 'GET',
+		'callback' => 'update_number',
+		'args' => array(
+			'number' => array(
+				'default'           => "",
+				'required'          => true, 
+			)
+			
+		),
+	) );
+	});
+	
+	//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/dell_number?number=Е268КР53&token=291327&mail=asmi046@gmail.com
+	function update_number( WP_REST_Request $request) {
+		
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+		
+		
+
+		$aus_chec_rez = get_number_info($request["number"]);
+
+		$statuses = get_status($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]);
+
+		$addingArray["status"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->status;
+		$addingArray["seria"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->series;
+		$addingArray["type"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_zone;
+		$addingArray["time"] =  empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass)?"":$aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass;
+		$addingArray["pass_number"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_number;
+		$addingArray["chec_time"] =  date("Y-m-d H:i:s");
+		$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_from));
+		$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_to));
+		$addingArray["anul_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date));
+		$addingArray["dey_count"] =  $statuses["deycount"];
+		$addingArray["sys_status"] =  $statuses["sys_status"];
+		
+		
+		$addResult = $serviceBase->update('service_number', $addingArray, array("number" => $request["number"]));
+		 
+		return $addResult;
+	}	
+
 ?>

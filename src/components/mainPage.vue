@@ -114,8 +114,7 @@ export default {
             },
 
             deleteNumber: () => {
-                console.log(allLibs.getCookie("userlogin"));
-                console.log(allLibs.getCookie("servtoken"));
+               
                 axios.get(this.REST_API_PREFIX + 'dell_number',
                 {
                     params: {
@@ -204,8 +203,33 @@ export default {
         numberInfo() {
 
         },
-        updateNumber() {
+        updateNumber(item) {
+            axios.get(this.REST_API_PREFIX + 'update_number',
+                {
+                    params: {
+                        number: item.number,
+                    }
+                })
+                .then( (resp) => {
+                    console.log(resp);
+                    this.$store.dispatch('updateNumberList',  {status: this.status, type: this.type, search: this.search});
+                })
 
+                .catch((error) => {
+                    let rezText = "";
+                    if (error.response)
+                    {
+                        rezText = error.response.data.message;
+                    } else 
+                    if (error.request) {
+                        rezText = error.message;
+                    } else {
+                        rezText = error.message;
+                    }
+                    
+                    console.log(error.config);
+                    console.log(rezText);
+                });
         },
         chengeNumber() {
 
