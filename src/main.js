@@ -9,6 +9,9 @@ import router from './router/router'
 
 import vuetify from './plugins/vuetify'
 
+import VuePapaParse from 'vue-papa-parse'
+Vue.use(VuePapaParse)
+
 import { VueMaskDirective } from 'v-mask'
 Vue.directive('mask', VueMaskDirective);
 

@@ -1,15 +1,38 @@
 <?
 
+// header('Access-Control-Allow-Origin: *');
+// header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
+// header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT');
+// header('Access-Control-Max-Age: 600');
+
 define("BI_SERVICE_DB_NAME", "manist1h_auscrm");
 define("BI_SERVICE_USER_NAME", "manist1h_auscrm");
 define("BI_SERVICE_USER_PASS", "N%034F0y");
 define("BI_SERVICE_DB_HOST", "localhost");
 
 function get_number_info($number) {
+
 	$token = "T2yJ1XQqmL2HYMCwZkUysagGl4x6htqm";
 	$url = "https://ap.mosbot.ru/api/passes.json";
 
-	return json_decode(file_get_contents($url."?apikey=".$token."&truck_num=".urlencode($number)));
+	$url = $url."?apikey=".$token."&truck_num=".urlencode($number);
+
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $url);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	// curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+	// curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+	// curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+	// curl_setopt($curl, CURLOPT_SSLVERSION, 3);
+	// curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+	curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
+	$str = curl_exec($curl);
+	curl_close($curl);
+
+	return json_decode($str);
+	
+
+	// return json_decode(file_get_contents($url."?apikey=".$token."&truck_num=".urlencode($number)));
 }
 
 add_action( 'rest_api_init', function () {
@@ -318,6 +341,10 @@ add_action( 'rest_api_init', function () {
 		'methods'  => 'POST',
 		'callback' => 'add_one_numbers',
 		'args' => array(
+			'element' => array(
+				'default'           => "0",
+				'required'          => true,            		
+			),
 			'chec' => array(
 				'default'           => "0",        		
 			),
@@ -359,59 +386,97 @@ function get_status($element) {
 // https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/add_one_numbers
 function add_one_numbers( WP_REST_Request $request ){
 	
-	$fileinfo = $request->get_file_params();
-
 	$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+	
+	$addetCount = 0;
 
-	$numbers = array();
+	$numbers = [];
 
-	$row = 1;
-	if (($handle = fopen($fileinfo["numbersfile"]["tmp_name"], "r")) !== FALSE) {
-		while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
-			
-			$number = mb_convert_encoding($data[1], "UTF-8", "WINDOWS-1251");
-			$email = mb_convert_encoding($data[0], "UTF-8", "WINDOWS-1251");
+	foreach ($request["element"] as $elem) {
+	
+	if (!isset($elem[1])) continue;
+	$mail = "";
+	if (isset($elem[0])) $mail = $elem[0];
 
-			$addingArray = array(
-				"number" => $number,
-				"email" => $email,
-			);
 
-			$statuses = array();
+	 $addingArray = array(
+	 		"number" => $elem[1],
+	 		"email" => $mail
+	 );
 
-			if (!empty($request["chec"])) {
+	
+	$addResult = $serviceBase->insert('service_number', $addingArray);
 
-				$aus_chec_rez = get_number_info($number);
+	if (!empty($addResult)) $addetCount++;
+	 $numbers[] = array(
+	 	"number" => $elem[1],
+	 	"email" => $mail,
+	 	"result" => $addResult
+	);
 
-				$statuses = get_status($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]);
-
-				$addingArray["status"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->status;
-				$addingArray["seria"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->series;
-				$addingArray["type"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_zone;
-				$addingArray["time"] =  empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass)?"":$aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass;
-				$addingArray["pass_number"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_number;
-				$addingArray["chec_time"] =  date("Y-m-d H:i:s");
-				$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_from));
-				$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_to));
-				$addingArray["anul_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date));
-				$addingArray["dey_count"] =  $statuses["deycount"];
-				$addingArray["sys_status"] =  $statuses["sys_status"];
-			
-			}
-
-			$addResult = $serviceBase->insert('service_number', $addingArray);
-
-			$numbers[] = array(
-				"number" => $number,
-				"email" => $email,
-				"result" => $addResult,
-				"statuses" => $statuses
-			);
-		}
-		fclose($handle);
+	
 	}
 
-	return $numbers;
+	return array("result" => $numbers, "count" => $addetCount);
+
+	
+}
+
+// 
+// Проверка номера при массовом добавлении
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/ch_number_after_add', array(
+		'methods'  => 'GET',
+		'callback' => 'ch_number_after_add',
+		'args' => array(
+			'number' => array(
+				'default'           => "0",
+				'required'          => true,            		
+			)
+		),
+	) );
+});
+
+// https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/ch_number_after_add?number=В228ТМ26
+function ch_number_after_add( WP_REST_Request $request ){
+	
+	$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+	$statuses = array();
+
+	$addingArray = array();
+		
+	$aus_chec_rez = get_number_info($request["number"]);
+
+	if (count($aus_chec_rez->passes) !== 0) 
+	{	
+
+	$statuses = get_status($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]);
+
+	$addingArray["status"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->status;
+	$addingArray["seria"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->series;
+	$addingArray["type"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_zone;
+	$addingArray["time"] =  empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass)?"":$aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass;
+	$addingArray["pass_number"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_number;
+	$addingArray["chec_time"] =  date("Y-m-d H:i:s");
+	$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_from));
+	$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_to));
+	
+	if (!empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date))
+		$addingArray["anul_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date));
+	
+	$addingArray["dey_count"] =  $statuses["deycount"];
+	$addingArray["sys_status"] =  $statuses["sys_status"];
+	} else {
+		$addingArray["dey_count"] =  0;
+		$addingArray["sys_status"] =  "Не найден";
+	}		
+		
+
+	$addResult = $serviceBase->update('service_number', $addingArray, array("number" => $request["number"]));
+
+	return array("result" => $addingArray, "nb" => $request["number"]);
 }
 
 // 
@@ -435,7 +500,6 @@ add_action( 'rest_api_init', function () {
 	function number_info( WP_REST_Request $request) {
 
 		return get_number_info($request["number"]); 
-	
 	}
 
 
@@ -474,7 +538,7 @@ add_action( 'rest_api_init', function () {
 		$type = empty($request["type"])?"%":$request["type"];
 		$searchstr = empty($request["searchstr"])?"%":$request["searchstr"];
 
-		$q = "SELECT * FROM `service_number` WHERE `sys_status` LIKE '".$status."' AND `seria` LIKE '".$type."' AND `pass_number` LIKE '".$searchstr."' AND `number` LIKE '".$searchstr."'  AND `email` LIKE '".$searchstr."'";
+		$q = "SELECT * FROM `service_number` WHERE `sys_status` LIKE '".$status."' AND `seria` LIKE '".$type."' AND `pass_number` LIKE '".$searchstr."' AND `number` LIKE '".$searchstr."'  AND `email` LIKE '".$searchstr."' ORDER BY `start_data` DESC";
 		
 		$result = $serviceBase->get_results($q);
 
@@ -562,28 +626,38 @@ add_action( 'rest_api_init', function () {
 		
 		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 		
-		
+		$addResult = [];
 
 		$aus_chec_rez = get_number_info($request["number"]);
 
-		$statuses = get_status($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]);
+		if (count($aus_chec_rez->passes) !== 0) 
+		{
+			$statuses = get_status($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]);
 
-		$addingArray["status"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->status;
-		$addingArray["seria"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->series;
-		$addingArray["type"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_zone;
-		$addingArray["time"] =  empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass)?"":$aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass;
-		$addingArray["pass_number"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_number;
-		$addingArray["chec_time"] =  date("Y-m-d H:i:s");
-		$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_from));
-		$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_to));
-		$addingArray["anul_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date));
-		$addingArray["dey_count"] =  $statuses["deycount"];
-		$addingArray["sys_status"] =  $statuses["sys_status"];
+			$addingArray["status"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->status;
+			$addingArray["seria"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->series;
+			$addingArray["type"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_zone;
+			$addingArray["time"] =  empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass)?"":$aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass;
+			$addingArray["pass_number"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_number;
+			$addingArray["chec_time"] =  date("Y-m-d H:i:s");
+			$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_from));
+			$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_to));
+			
+			if (!empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date))
+				$addingArray["anul_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date));
+			
+			$addingArray["dey_count"] =  $statuses["deycount"];
+			$addingArray["sys_status"] =  $statuses["sys_status"];
+		} else {
+				$addingArray["dey_count"] =  0;
+				$addingArray["sys_status"] =  "Не найден";
+		}		
+			
+			
+			$addResult = $serviceBase->update('service_number', $addingArray, array("number" => $request["number"]));
 		
-		
-		$addResult = $serviceBase->update('service_number', $addingArray, array("number" => $request["number"]));
-		 
-		return $addResult;
+
+		return array("param" => $addingArray, "result" => $addResult);
 	}	
 
 ?>

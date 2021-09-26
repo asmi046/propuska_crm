@@ -59,9 +59,12 @@
                     :headers="headers"
                     :items="this.NUMBER_LIST"
                     :search="search"
+                    itemsPerPage = 30,
+                    :item-class="itemRowBackground"
                     :footer-props="{
                         itemsPerPageText:'Записей на странице',
-                        pageText: '{0}-{1} из {2}'
+                        pageText: '{0}-{1} из {2}',
+                        itemsPerPageOptions: [20, 60, 100, 300, -1]
                     }"
                     >
                     
@@ -190,6 +193,22 @@ export default {
     },
 
     methods:{
+        itemRowBackground: function (item) {
+            if (item.sys_status == "Начинается сегодня")
+                return "start_today";
+            if (item.sys_status == "Начинается завтра")
+                return "start_tomorrow";
+            if (item.sys_status == "Действует")
+                return "deistvuet";
+            if (item.sys_status == "Закончился")
+                return "end";
+            if (item.sys_status == "Заканчивается завтра")
+                return "end_tomorrow";
+            if (item.sys_status == "Заканчивается сегодня")
+                return "end_today";
+            if (item.sys_status == "Анулирован")
+                return "anul";
+        },
         clearFilter() {
             this.status = ""; 
             this.type = ""; 
@@ -263,6 +282,34 @@ export default {
      color: white;
      font-weight: normal;
  }
+
+ .deistvuet {
+    background-color: #cff4bd;
+ }
+
+ .start_today {
+    background-color: #aff58e;
+ }
+
+ .start_tomorrow {
+    background-color: #bdf6a2;
+ }
+
+.end {
+    background-color: #f3c769;
+}
+
+.end_today {
+    background-color: #f4d082;
+}
+
+.end_tomorrow {
+    background-color: #f5d99d;
+}
+
+.anul {
+    background-color: #f78964
+}
 
  @media (max-width: 640px) {
     .v-data-table-header {
