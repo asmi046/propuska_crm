@@ -171,9 +171,9 @@ $anulPropuskCount = 0;
 foreach ($numbers as $elem) {
 	$info = update_number_info_ev($elem->number);
 	
-   print_r($index);
-   echo "\n\r";
-   print_r($elem->number);
+	if (empty($info->param->dey_count)) continue;
+   echo "# ".$index."\n\r";
+   echo "№ авто: ".$elem->number;
    echo "\n\r";
    print_r($info);
    echo "\n\r";
