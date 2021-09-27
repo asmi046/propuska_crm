@@ -499,7 +499,17 @@ add_action( 'rest_api_init', function () {
 	//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/number_info?number=Х983ХК750
 	function number_info( WP_REST_Request $request) {
 
-		return get_number_info($request["number"]); 
+		$info = get_number_info($request["number"]);
+		
+		$rez = array_reverse($info->passes);
+		
+		foreach ($rez as $element) {
+			$statuses = get_status($element);
+			$element->sys_status = $statuses["sys_status"];
+			$element->deycount = $statuses["deycount"];
+		}
+
+		return $rez; 
 	}
 
 

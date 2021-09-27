@@ -45,7 +45,7 @@
                 :headers="headers"
                 :items="numberData"
                 hide-default-footer
-                
+                :item-class="itemRowBackground"
             ></v-data-table>
             </v-col>
         </v-row>
@@ -74,7 +74,8 @@ export default {
                {text: "Дата начала", value:"valid_from"},
                {text: "Дата окончания", value:"valid_to"},
                {text: "Время", value:"type_pass"},
-               {text: "Статус", value:"status"},
+               {text: "Статус", value:"sys_status"},
+               {text: "Осталось дней", value:"deycount"},
            ]
         }
     },
@@ -84,6 +85,24 @@ export default {
     },
 
     methods: {
+
+        itemRowBackground: function (item) {
+            if (item.sys_status == "Начинается сегодня")
+                return "start_today";
+            if (item.sys_status == "Начинается завтра")
+                return "start_tomorrow";
+            if (item.sys_status == "Действует")
+                return "deistvuet";
+            if (item.sys_status == "Закончился")
+                return "end";
+            if (item.sys_status == "Заканчивается завтра")
+                return "end_tomorrow";
+            if (item.sys_status == "Заканчивается сегодня")
+                return "end_today";
+            if (item.sys_status == "Анулирован")
+                return "anul";
+        },
+
         getNumberInfo () {
             this.loadingShow = true;
             this.resultShow = false;
@@ -96,7 +115,7 @@ export default {
             
             .then( (resp) => {
                     console.log(resp)
-                    this.numberData = resp.data.passes 
+                    this.numberData = resp.data 
                     this.loadingShow = false
                     this.resultShow = true
             })
@@ -132,6 +151,34 @@ export default {
 .checkBtn {
     width: 100%;
     min-height: 48px;
+}
+
+ .deistvuet {
+    background-color: #cff4bd;
+ }
+
+ .start_today {
+    background-color: #aff58e;
+ }
+
+ .start_tomorrow {
+    background-color: #bdf6a2;
+ }
+
+.end {
+    background-color: #f3c769;
+}
+
+.end_today {
+    background-color: #f4d082;
+}
+
+.end_tomorrow {
+    background-color: #f5d99d;
+}
+
+.anul {
+    background-color: #f78964
 }
 
 </style>
