@@ -94,7 +94,7 @@ export default {
                 {
                     params: {
                         number: this.dataOfNumber.number,
-                        email: this.dataOfNumber.email,
+                        mail: this.dataOfNumber.email,
                         phone: this.dataOfNumber.phone,
                         sts: this.dataOfNumber.sts
                     }
