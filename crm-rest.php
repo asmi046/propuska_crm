@@ -631,12 +631,52 @@ add_action( 'rest_api_init', function () {
 			'number' => array(
 				'default'           => "",
 				'required'          => true, 
-			)
+			),
+			'passtype' => array(
+				'default'           => "", 
+			),
 			
 		),
 	) );
 	});
 	
+	function counting_dey_night($pases) {
+		$count_activ = 0;
+		$night = "Нет";
+		$dey = "Нет";
+		
+		foreach ($pases->passes as $elem) {
+			$statuses = get_status($elem);
+			$elem->sys_status = $statuses["sys_status"];
+			$elem->deycount = $statuses["deycount"];
+
+			
+			if ($elem->sys_status == "Действует") $count_activ++;
+			if (($elem->type_pass == "Дневной") && ($elem->sys_status == "Действует")) $dey = "Да";
+			if (($elem->type_pass == "Ночной") && ($elem->sys_status == "Действует")) $night = "Да";
+		}
+
+		return array(
+			"active_count" => $count_activ,
+			"exist_dey" => $dey,
+			"exist_night" => $night,
+		);
+	}
+
+	function index_pass($pases, $type) {
+		$index = 0;
+		foreach ($pases->passes as $elem) { 
+			$statuses = get_status($elem);
+			$elem->sys_status = $statuses["sys_status"];
+
+			if (($elem->type_pass == $type) && ($elem->sys_status == "Действует")) return $index;
+			
+			$index++;
+		}
+
+		return $index;
+	}
+
 	//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/dell_number?number=Е268КР53&token=291327&mail=asmi046@gmail.com
 	function update_number( WP_REST_Request $request) {
 		
@@ -645,25 +685,37 @@ add_action( 'rest_api_init', function () {
 		$addResult = [];
 
 		$aus_chec_rez = get_number_info($request["number"]);
+		
+		if (empty($request["passtype"]))
+			$getIndex = count($aus_chec_rez->passes) - 1;
+		else 
+			$getIndex = index_pass($aus_chec_rez, $request["passtype"]);
 
 		if (count($aus_chec_rez->passes) !== 0) 
 		{
-			$statuses = get_status($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]);
+			$statuses = get_status($aus_chec_rez->passes[$getIndex]);
 
-			$addingArray["status"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->status;
-			$addingArray["seria"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->series;
-			$addingArray["type"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_zone;
-			$addingArray["time"] =  empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass)?"":$aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->type_pass;
-			$addingArray["pass_number"] =  $aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->pass_number;
+			$addingArray["status"] =  $aus_chec_rez->passes[$getIndex]->status;
+			$addingArray["seria"] =  $aus_chec_rez->passes[$getIndex]->series;
+			$addingArray["type"] =  $aus_chec_rez->passes[$getIndex]->pass_zone;
+			$addingArray["time"] =  empty($aus_chec_rez->passes[$getIndex]->type_pass)?"":$aus_chec_rez->passes[$getIndex]->type_pass;
+			$addingArray["pass_number"] =  $aus_chec_rez->passes[$getIndex]->pass_number;
 			$addingArray["chec_time"] =  date("Y-m-d H:i:s");
-			$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_from));
-			$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->valid_to));
+			$addingArray["start_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[$getIndex]->valid_from));
+			$addingArray["end_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[$getIndex]->valid_to));
 			
-			if (!empty($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date))
-				$addingArray["anul_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[count($aus_chec_rez->passes) - 1]->cancel_date));
+			if (!empty($aus_chec_rez->passes[$getIndex]->cancel_date))
+				$addingArray["anul_data"] =  date("Y-m-d H:i:s", strtotime($aus_chec_rez->passes[$getIndex]->cancel_date));
 			
 			$addingArray["dey_count"] =  $statuses["deycount"];
 			$addingArray["sys_status"] =  $statuses["sys_status"];
+
+			$counting = counting_dey_night($aus_chec_rez);
+
+			$addingArray["active_count"] =  $counting["active_count"];
+			$addingArray["exist_dey"] =  $counting["exist_dey"];
+			$addingArray["exist_night"] =  $counting["exist_night"];
+
 		} else {
 				$addingArray["dey_count"] =  0;
 				$addingArray["sys_status"] =  "Не найден";

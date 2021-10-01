@@ -59,7 +59,7 @@
                     :headers="headers"
                     :items="this.NUMBER_LIST"
                     :search="search"
-                    itemsPerPage = 30,
+                    :itemsPerPage = "20"
                     :item-class="itemRowBackground"
                     :footer-props="{
                         itemsPerPageText:'Записей на странице',
@@ -169,6 +169,9 @@ export default {
                 {text:'Госномер', value: 'number'},
                 {text:'e-mail', value: 'email'},
                 {text:'Время', value: 'time'},
+                {text:'Активных', value: 'active_count'},
+                {text:'Есть дневной', value: 'exist_dey'},
+                {text:'Есть ночной', value: 'exist_night'},
                 {text:'Статус', value: 'status'},
                 {text:'Системный статус', value: 'sys_status'},
                 {text:'Проверен', value: 'chec_time'},

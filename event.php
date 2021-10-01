@@ -49,7 +49,7 @@ function checRazoviPropusk($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "Вышел разовый пропуск для ".$number." до ".$info->param->end_data;
-		$mailContent = "Здравствуйте, ".$number." - вышел разовый пропуск на ".$info->param->type." с ".$info->param->start_data." по ".$info->param->end_data." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number;
+		$mailContent = "Здравствуйте, ".$number." - вышел разовый пропуск на ".$info->param->type." с ".$info->param->start_data." по ".$info->param->end_data." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
 		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
@@ -75,7 +75,7 @@ function checPostPropusk($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "Вышел постоянный пропуск для ".$number." до ".$info->param->end_data;
-		$mailContent = "Здравствуйте, ".$number." - вышел постоянный пропуск на ".$info->param->type." с ".$info->param->start_data." по ".$info->param->end_data." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number;
+		$mailContent = "Здравствуйте, ".$number." - вышел постоянный пропуск на ".$info->param->type." с ".$info->param->start_data." по ".$info->param->end_data." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
 		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
@@ -107,6 +107,8 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 		$mailSabj = "До окончания пропуска на ".$number." осталось 30 дней";
 		$mailContent = "Здравствуйте, пропуск на ".$number."  заканчивается ".$info->param->end_data.". Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
 		$mailContent .= "<br/>";
+		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
+		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
 		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
 		wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
@@ -134,6 +136,8 @@ function checAnul($number, $info, $email_tosendMn) {
 		$mailSabj = "Пропуск ".$number." анулирован";
 		$mailContent = "Здравствуйте, пропуск ".$number." - АНУЛИРОВАН ".$info->param->anul_data." Рекомендуем ограничить поездки по МКАД и внутри Москвы для избежания штрафов.";
 		$mailContent .= "<br/>";
+		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
+		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
 		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
 		wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
@@ -142,8 +146,12 @@ function checAnul($number, $info, $email_tosendMn) {
 	}
 }
 
-function update_number_info_ev($number) {
+function update_number_info_ev($number, $type) {
 	$url = "https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/update_number?number=".urlencode($number); 
+	
+	if (!empty($type))
+		$url = $url."&passtype=".$type;
+
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $url);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -169,9 +177,9 @@ $OutPropuskCount = 0;
 $anulPropuskCount = 0;
 
 foreach ($numbers as $elem) {
-	$info = update_number_info_ev($elem->number);
+	$info = update_number_info_ev($elem->number, "");
 	
-	if (empty($info->param->dey_count)) continue;
+   if (empty($info->param->dey_count)) continue;
    echo "# ".$index."\n\r";
    echo "№ авто: ".$elem->number;
    echo "\n\r";
@@ -185,6 +193,39 @@ foreach ($numbers as $elem) {
    $OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
    $anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
    $index++;
+
+   if (($info->param->time == "Дневной")&&($info->param->exist_night == "Да")) {
+		$info = update_number_info_ev($elem->number, "Ночной");
+		
+		echo "# ---- Ночной\n\r";
+		echo "№ авто: ".$elem->number;
+		echo "\n\r";
+		print_r($info);
+		echo "\n\r";
+	 
+		$RazoviPropuskCount += checRazoviPropusk($elem->number, $info, $email_tosendMn);
+		$PostoyanniPropuskCount += checPostPropusk($elem->number, $info, $email_tosendMn);
+		$OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
+		$anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
+		$index++;
+
+   }
+
+   if (($info->param->time == "Ночной")&&($info->param->exist_dey == "Да")) {
+		$info = update_number_info_ev($elem->number, "Дневной");
+
+		echo "# ---- Дневной\n\r";
+		echo "№ авто: ".$elem->number;
+		echo "\n\r";
+		print_r($info);
+		echo "\n\r";
+	 
+		$RazoviPropuskCount += checRazoviPropusk($elem->number, $info, $email_tosendMn);
+		$PostoyanniPropuskCount += checPostPropusk($elem->number, $info, $email_tosendMn);
+		$OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
+		$anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
+		$index++;
+   }
    
 }
 
