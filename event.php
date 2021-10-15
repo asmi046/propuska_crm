@@ -129,12 +129,12 @@ function checAnul($number, $info, $email_tosendMn) {
 	
 	if (strtotime($now) !== strtotime($start)) return 0;
 
-	if (!checkBaseEvent("Анулирован пропуск", date("Y-m-d"), $number, $info->param->pass_number)) {
+	if (!checkBaseEvent("Аннулирован пропуск", date("Y-m-d"), $number, $info->param->pass_number)) {
 
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
-		$mailSabj = "Пропуск ".$number." анулирован";
-		$mailContent = "Здравствуйте, пропуск ".$number." - АНУЛИРОВАН ".$info->param->anul_data." Рекомендуем ограничить поездки по МКАД и внутри Москвы для избежания штрафов.";
+		$mailSabj = "Пропуск ".$number." аннулирован";
+		$mailContent = "Здравствуйте, пропуск ".$number." - Аннулирован ".$info->param->anul_data." Рекомендуем ограничить поездки по МКАД и внутри Москвы для избежания штрафов.";
 		$mailContent .= "<br/>";
 		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
