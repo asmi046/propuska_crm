@@ -370,7 +370,7 @@ function countDaysBetweenDates($d1, $d2)
 
 function get_status($element) {
 	$deycount = countDaysBetweenDates($element->valid_to, date("Y-m-d H:i:s"));
-	$deycount = (($deycount-1)<0)?0:($deycount-1);
+	$deycount = (($deycount+1)<0)?0:($deycount+1);
 	
 
 	$status = "Действует";
