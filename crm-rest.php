@@ -751,6 +751,13 @@ add_action( 'rest_api_init', function () {
 
 			$numberinfo = $serviceBase->get_results("SELECT * FROM `service_number` WHERE `pass_number` = '".$pn."'");
 		
+			$headersMnT = array(
+				'From: Сайт Пропуска на МКАД <noreply@propuska-mkad-ttk-sk.ru>',
+				'content-type: text/html',
+			);
+
+			add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
+
 			if (empty($numberinfo))
 				return array(
 					"pass_number" => $request["number"],
@@ -761,7 +768,15 @@ add_action( 'rest_api_init', function () {
 					"result" => "Такой номер пропуска не найден в базе",
 				);
 			
-			if (empty($numberinfo[0]->email))
+			if (empty($numberinfo[0]->email)) {
+				
+				
+				$mailSabj = "Для автомобиля ноер ".$numberinfo[0]->number." нет e-mail";
+				$mailContent = "<p>Внимание! Добавьте e-mail для автомобиля с номером ".$numberinfo[0]->number."</p>";
+				
+				wp_mail("asmi046@gmail.com, info@propusk247.ru", $mailSabj, $mailContent, $headersMnT);			
+
+
 				return array(
 					"pass_number" => $request["number"],
 					"pass_number_m" => $pn,
@@ -770,26 +785,23 @@ add_action( 'rest_api_init', function () {
 					"rt" => false,
 					"result" => "Нет e-mail в базе",
 				);
+			}
 	
 
-				$headersMnT = array(
-					'From: Сайт Пропуска н МКАД <noreply@propuska-mkad-ttk-sk.ru>',
-					'content-type: text/html',
-				);
 
-				add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
-		
-				$mailSabj = "Пропуск на автомобиль с номером ".$numberinfo[0]->number." будет аннулирован завтра";
-				$mailContent = "Пропуск на автомобиль с номером ".$numberinfo[0]->number." будет анулирован завтра.";
-				$mailContent = " Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
-				$mailContent .= "<br/>";
-				$mailContent .= "Серия и номер пропуска ".$numberinfo[0]->seria." ".$numberinfo[0]->pass_number." (".$numberinfo[0]->time.")";
+
+			
+				$mailSabj = "Пропуск на автомобиль ".$numberinfo[0]->number." будет аннулирован завтра";
+				$mailContent = "<p>Внимание! Завтра будет аннулирован пропуск на автомобиль с номером ".$numberinfo[0]->number.". Серия и номер пропуска ".$numberinfo[0]->seria." ".$numberinfo[0]->pass_number." (".$numberinfo[0]->time."). Просьба завтра ограничить поездки по Москве. </p>";
+				$mailContent .= "<p>Пропуск будет восстановлен. Также на время изготовления могут быть предоставлены два временных пропуска по 5 дней каждый.</p>";
+				$mailContent .= "<p>Свяжитесь с нами, если необходимо восстановление годовых, и оформление разовых пропусков.</p>";
+				$mailContent .= "Наша почта: zakaz@propuska-mkad-ttk-sk.ru <br/> Наши телефоны: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
 				$mailContent .= "<br/>";
 				$mailContent .= "<br/>";
 				$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
 				
-				wp_mail($numberinfo[0]->email, $mailSabj, $mailContent, $headersMnT);			
-			 
+				wp_mail($numberinfo[0]->email.", asmi046@gmail.com, info@propusk247.ru", $mailSabj, $mailContent, $headersMnT);			
+				
 			return array(
 				"pass_number" => $request["number"],
 				"pass_number_m" => $pn,
