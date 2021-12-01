@@ -728,4 +728,76 @@ add_action( 'rest_api_init', function () {
 		return array("param" => $addingArray, "result" => $addResult);
 	}	
 
+	add_action( 'rest_api_init', function () {
+		register_rest_route( 'lscrm/v2', '/mass_alert', array(
+			'methods'  => 'GET',
+			'callback' => 'mass_alert',
+			'args' => array(
+				'number' => array(
+					'default'           => "",
+					'required'          => true, 
+				),
+		
+			),
+		) );
+		});
+		
+		//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/mass_alert?number=Е268КР53&token=291327&mail=asmi046@gmail.com
+		function mass_alert( WP_REST_Request $request) {
+			
+			$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+			
+			$pn = mb_substr($request["number"], 2);
+
+			$numberinfo = $serviceBase->get_results("SELECT * FROM `service_number` WHERE `pass_number` = '".$pn."'");
+		
+			if (empty($numberinfo))
+				return array(
+					"pass_number" => $request["number"],
+					"pass_number_m" => $pn,
+					"carr_number" => "",
+					"email" => "",
+					"rt" => false,
+					"result" => "Такой номер пропуска не найден в базе",
+				);
+			
+			if (empty($numberinfo[0]->email))
+				return array(
+					"pass_number" => $request["number"],
+					"pass_number_m" => $pn,
+					"carr_number" => $numberinfo[0]->number,
+					"email" => $numberinfo[0]->email,
+					"rt" => false,
+					"result" => "Нет e-mail в базе",
+				);
+	
+
+				$headersMnT = array(
+					'From: Сайт Пропуска н МКАД <noreply@propuska-mkad-ttk-sk.ru>',
+					'content-type: text/html',
+				);
+
+				add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
+		
+				$mailSabj = "Пропуск на автомобиль с номером ".$numberinfo[0]->number." будет аннулирован завтра";
+				$mailContent = "Пропуск на автомобиль с номером ".$numberinfo[0]->number." будет анулирован завтра.";
+				$mailContent = " Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
+				$mailContent .= "<br/>";
+				$mailContent .= "Серия и номер пропуска ".$numberinfo[0]->seria." ".$numberinfo[0]->pass_number." (".$numberinfo[0]->time.")";
+				$mailContent .= "<br/>";
+				$mailContent .= "<br/>";
+				$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
+				
+				wp_mail($numberinfo[0]->email, $mailSabj, $mailContent, $headersMnT);			
+			 
+			return array(
+				"pass_number" => $request["number"],
+				"pass_number_m" => $pn,
+				"carr_number" => $numberinfo[0]->number,
+				"email" => $numberinfo[0]->email,
+				"rt" => true,
+				"result" => "Оповещение отправлено",
+			);
+		}	
+
 ?>

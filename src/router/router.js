@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import mainPage from '../components/mainPage'
+import massAlert from '../components/massAlert'
 import addNumber from '../components/addNumber'
 import addNumbers from '../components/addNumbers'
 import autoriseComponent from '../components/autoriseComponent'
@@ -39,6 +40,12 @@ let router = new VueRouter ( {
                 name: 'addfull',
                 meta: {title: "Пакетное добавление номеров"},
                 component: addNumbers
+            },
+            {
+                path: '/mass_alert',
+                name: 'massAlert',
+                meta: {title: "Массовое оповещение об ануляции"},
+                component: massAlert
             },
             {
                 path: '/check_number/:number?',
