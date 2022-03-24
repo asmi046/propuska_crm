@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import mainPage from '../components/mainPage'
 import massAlert from '../components/massAlert'
+import massCheck from '../components/massCheck'
 import addNumber from '../components/addNumber'
 import addNumbers from '../components/addNumbers'
 import autoriseComponent from '../components/autoriseComponent'
@@ -47,6 +48,14 @@ let router = new VueRouter ( {
                 meta: {title: "Массовое оповещение об ануляции"},
                 component: massAlert
             },
+            
+            {
+                path: '/mass_check',
+                name: 'massCheck',
+                meta: {title: "Массовая проверка номеров"},
+                component: massCheck
+            },
+
             {
                 path: '/check_number/:number?',
                 name: 'checknumber',

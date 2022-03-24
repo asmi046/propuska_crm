@@ -62,6 +62,7 @@ export default {
         {text: 'Добавить номера', icon: 'mdi-cards-outline', to: {name:'addfull'}},
         {text: 'Проверить номер', icon: 'mdi-checkbox-multiple-marked-outline', to: "/check_number/"},
         {text: 'Экстренное оповещение', icon: 'mdi-alert-outline', to: {name:'massAlert'}},
+        {text: 'Массовая проверка номеров', icon: 'mdi-check-all', to: {name:'massCheck'}},
     ],
   }),
 

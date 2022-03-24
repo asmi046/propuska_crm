@@ -812,4 +812,58 @@ add_action( 'rest_api_init', function () {
 			);
 		}	
 
+	add_action( 'rest_api_init', function () {
+		register_rest_route( 'lscrm/v2', '/mass_check', array(
+			'methods'  => 'GET',
+			'callback' => 'mass_check',
+			'args' => array(
+				'number' => array(
+					'default'           => "",
+					'required'          => true, 
+				),
+		
+			),
+		) );
+		});
+		
+		//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/mass_check?number=Е268КР53
+		function mass_check( WP_REST_Request $request) {
+			
+			$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+			
+
+			$numberInfo = get_number_info($request["number"]);
+			$numberInfo = $numberInfo->passes;
+
+			$rezArray = [];
+
+			for ($i = 0; $i<count($numberInfo); $i++) {
+				if (!empty($numberInfo[$i]->record_updated_on) && ($numberInfo[$i]->series === "БА")){
+					$dataUp = date("Y-m-d",strtotime($numberInfo[$i]->record_updated_on));
+					$nData = date("Y-m-d");
+					// $nData = date("Y-m-d", strtotime("2019-12-12T00:49:41"));
+	
+
+					if ($dataUp == $nData) {
+						$rezArray = array(
+							"number" => $request["number"],
+							"status" =>  "Выдан сегодня",
+							"data" =>  $numberInfo[$i]
+						);
+						break;	
+					}
+				} 
+				
+			}
+
+			if (empty($rezArray))
+				$rezArray = array(
+					"number" => $request["number"],
+					"status" =>  "Выдан другой датой",
+					"data" =>  array()
+				);
+
+			return $rezArray;
+		}	
+
 ?>
