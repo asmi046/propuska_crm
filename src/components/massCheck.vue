@@ -42,13 +42,30 @@
         </v-row>
         <v-row>
             <v-col>
-                <table class = "mainTable"> 
+                <table class = "mainTable">
+                    <thead>
+                        <tr>
+                            <th>Номер</th>
+                            <th>Статус</th>
+                            <th>Тип пропуска</th>
+                            <th>Серия пропуска</th>
+                            <th>Номер пропуска</th>
+                            <th>Дата начала</th>
+                            <th>Дата окончания</th>
+                            <th>Время</th>
+                        </tr>
+                    </thead> 
+                    
                     <tbody>
                         <tr v-for="(item, i) in numbers" :key="i" >
-                            <td>{{item.carr_number}}</td>
-                            <td>{{item.pass_number}}</td>
-                            <td>{{item.email}}</td>
-                            <td>{{item.result}}</td>
+                            <td>{{item.number}}</td>
+                            <td>{{item.status}}</td>
+                            <td>{{ (item.data.length != 0)?item.data.pass_zone:""}}</td>
+                            <td>{{ (item.data.length != 0)?item.data.series:""}}</td>
+                            <td>{{ (item.data.length != 0)?item.data.pass_number:""}}</td>
+                            <td>{{ (item.data.length != 0)?item.data.valid_from:""}}</td>
+                            <td>{{ (item.data.length != 0)?item.data.valid_to:""}}</td>
+                            <td>{{ (item.data.length != 0)?item.data.type_pass:""}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -135,9 +152,30 @@ export default {
         border-spacing: 0;
     }
 
+    .mainTable tbody tr:nth-child(2n-1) td {
+        background-color: #ebebeb;
+    }
+
+    .mainTable th,
     .mainTable td{
         padding: 5px 15px;
         border-bottom: 1px solid lightgray;
         border-right: 1px solid lightgray;
+    }
+
+    @media screen and (max-width:920px) { 
+        .mainTable thead{
+            display: none;
+        }
+
+        .mainTable tbody tr{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .mainTable tbody tr td,
+        .mainTable tbody tr th{
+            width: 100%;
+        }
     }
 </style>
