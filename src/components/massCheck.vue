@@ -57,7 +57,7 @@
                     </thead> 
                     
                     <tbody>
-                        <tr v-for="(item, i) in numbers" :key="i" >
+                        <tr v-for="(item, i) in numbers" :key="i" :class = "{isChectdNow: item.data.length != 0}" >
                             <td>{{item.number}}</td>
                             <td>{{item.status}}</td>
                             <td>{{ (item.data.length != 0)?item.data.pass_zone:""}}</td>
@@ -152,8 +152,10 @@ export default {
         border-spacing: 0;
     }
 
-    .mainTable tbody tr:nth-child(2n-1) td {
-        background-color: #ebebeb;
+    /* .mainTable tbody tr:nth-child(2n-1) td */
+    .isChectdNow td
+     {
+        background-color: lightgreen;
     }
 
     .mainTable th,
