@@ -5,17 +5,10 @@
 // header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT');
 // header('Access-Control-Max-Age: 600');
 
-define("BI_SERVICE_DB_NAME", "manist1h_auscrm");
-define("BI_SERVICE_USER_NAME", "manist1h_auscrm");
-define("BI_SERVICE_USER_PASS", "N%034F0y");
-define("BI_SERVICE_DB_HOST", "localhost");
 
 function get_number_info($number) {
 
-	$token = "T2yJ1XQqmL2HYMCwZkUysagGl4x6htqm";
-	$url = "https://ap.mosbot.ru/api/passes.json";
-
-	$url = $url."?apikey=".$token."&truck_num=".urlencode($number);
+	$url = BI_SERVICE_URL."?apikey=".BI_SERVICE_TOKEN."&truck_num=".urlencode($number);
 
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $url);
