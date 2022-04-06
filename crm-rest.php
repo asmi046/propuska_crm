@@ -5,7 +5,7 @@
 // header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT');
 // header('Access-Control-Max-Age: 600');
 
-
+// https://ap.mosbot.ru/api/passes.json?apikey=T2yJ1XQqmL2HYMCwZkUysagGl4x6htqm&truck_num=%D0%A5983%D0%A5%D0%9A750
 function get_number_info($number) {
 
 	$url = BI_SERVICE_URL."?apikey=".BI_SERVICE_TOKEN."&truck_num=".urlencode($number);
@@ -24,6 +24,7 @@ function get_number_info($number) {
 	if($str === false)
 	{
    	 	echo 'Ошибка curl: ' . curl_error($curl);
+		return false;
 	}
 
 	curl_close($curl);
@@ -499,6 +500,8 @@ add_action( 'rest_api_init', function () {
 	function number_info( WP_REST_Request $request) {
 
 		$info = get_number_info($request["number"]);
+
+		if (empty($info)) return [];
 		
 		$rez = array_reverse($info->passes);
 		

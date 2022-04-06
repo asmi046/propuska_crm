@@ -1,6 +1,6 @@
 <?
 // /usr/local/bin/php7.3 ~/propuska-mkad-ttk-sk.ru/public_html/bot/event.php
-require __DIR__ . "/../vendor/autoload.php";
+// require __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . "/../wp-config.php";
 
 define("COMPANY_NAME", "Пропуска на МКАД");
@@ -147,7 +147,7 @@ function checAnul($number, $info, $email_tosendMn) {
 }
 
 function update_number_info_ev($number, $type) {
-	$url = "https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/update_number?number=".urlencode($number); 
+	$url = "https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/update_number?number=".urlencode($number); 
 	
 	if (!empty($type))
 		$url = $url."&passtype=".$type;
