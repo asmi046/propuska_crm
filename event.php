@@ -97,6 +97,7 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 	$deycount = floor((strtotime($end) - strtotime($now) ) / (60 * 60 * 24));
 	
 
+	// if (($deycount < 30)||($deycount > 40)) return 0;
 	if ($deycount != 30) return 0;
 
 	
