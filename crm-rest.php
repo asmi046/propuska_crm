@@ -860,6 +860,42 @@ add_action( 'rest_api_init', function () {
 				);
 
 			return $rezArray;
-		}	
+		}
+		
+		
+// 
+// Проверка номера снаружи
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/get_number_info_out', array(
+		'methods'  => 'GET',
+		'callback' => 'get_number_info_out',
+		'args' => array(
+			'number' => array(
+				'default'           => "",
+				'required'          => true,        		
+			)
+		),
+	) );
+	});
+	
+	//https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/get_number_info_out?number=Х983ХК750
+	function get_number_info_out( WP_REST_Request $request) {
+
+		$info = get_number_info($request["number"]);
+
+		if (empty($info)) return [];
+		
+		$rez = array_reverse($info->passes);
+		
+		foreach ($rez as $element) {
+			$statuses = get_status($element);
+			$element->sys_status = $statuses["sys_status"];
+			$element->deycount = $statuses["deycount"];
+		}
+
+		return $rez; 
+	}
 
 ?>
