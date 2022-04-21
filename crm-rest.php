@@ -509,6 +509,7 @@ add_action( 'rest_api_init', function () {
 			$statuses = get_status($element);
 			$element->sys_status = $statuses["sys_status"];
 			$element->deycount = $statuses["deycount"];
+			$element->mms = "ZZZZ";
 		}
 
 		return $rez; 
@@ -875,17 +876,37 @@ add_action( 'rest_api_init', function () {
 			'number' => array(
 				'default'           => "",
 				'required'          => true,        		
+			),
+
+			'token' => array(
+				'default'           => "",
+				'required'          => true,        		
 			)
 		),
+
+		
 	) );
 	});
 	
 	//https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/get_number_info_out?number=Х983ХК750
 	function get_number_info_out( WP_REST_Request $request) {
 
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+
+		$user = $serviceBase->get_results("SELECT * FROM `api_users` WHERE `pass` = '".$request["token"]."'");
+
+		if (empty($user))
+			return new WP_Error( 'no_token_incorrect', 'Токен некорректен', [ 'status' => 403 ] );
+		
 		$info = get_number_info($request["number"]);
 
 		if (empty($info)) return [];
+
+		$serviceBase->insert( "api_log", [
+			"car_number" => $request["number"],
+			"user_id" => $user[0]->id,
+			"user_name" => $user[0]->name
+		], ["%s", "%s", "%s"] );
 		
 		$rez = array_reverse($info->passes);
 		
@@ -893,6 +914,7 @@ add_action( 'rest_api_init', function () {
 			$statuses = get_status($element);
 			$element->sys_status = $statuses["sys_status"];
 			$element->deycount = $statuses["deycount"];
+			$element->mms = "ZZZZ";
 		}
 
 		return $rez; 
