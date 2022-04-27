@@ -7,7 +7,7 @@ define("COMPANY_NAME", "Пропуска на МКАД");
 define("MAIL_RESEND", "zakaz@propuska-mkad-ttk-sk.ru");
 
 $headersMn = array(
-	'From: Сайт ' . COMPANY_NAME . ' <' . MAIL_RESEND . '>',
+	'From: Сайт Пропуска на МКАД <noreply@propuska-mkad-ttk-sk.ru>',
 	'content-type: text/html',
 );
 
@@ -97,7 +97,7 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 	$deycount = floor((strtotime($end) - strtotime($now) ) / (60 * 60 * 24));
 	
 
-	if (($deycount == 29)||($deycount == 30)) return 0;
+	if (($deycount != 29)||($deycount != 30)) return 0;
 	// if ($deycount != 30) return 0;
 
 	
