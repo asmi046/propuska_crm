@@ -97,8 +97,8 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 	$deycount = floor((strtotime($end) - strtotime($now) ) / (60 * 60 * 24));
 	
 
-	// if (($deycount < 30)||($deycount > 40)) return 0;
-	if ($deycount != 30) return 0;
+	if (($deycount == 29)||($deycount == 30)) return 0;
+	// if ($deycount != 30) return 0;
 
 	
 	if (!checkBaseEvent("До окончания пропуска осталось 30 дней", date("Y-m-d"), $number, $info->param->pass_number)) {
