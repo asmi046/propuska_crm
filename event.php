@@ -7,7 +7,7 @@ define("COMPANY_NAME", "Пропуска на МКАД");
 define("MAIL_RESEND", "zakaz@propuska-mkad-ttk-sk.ru");
 
 $headersMn = array(
-	'From: Сайт Пропуска на МКАД <noreply@propuska-mkad-ttk-sk.ru>',
+	'From: '.COMPANY_NAME.' <'.MAIL_RESEND.'>',
 	'content-type: text/html',
 );
 
@@ -97,8 +97,8 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 	$deycount = floor((strtotime($end) - strtotime($now) ) / (60 * 60 * 24));
 	
 
-	if (($deycount != 29)||($deycount != 30)) return 0;
-	// if ($deycount != 30) return 0;
+	// if (($deycount != 27)&&($deycount != 28)&&($deycount != 29)&&($deycount != 30)) return 0;
+	if ($deycount != 30) return 0;
 
 	
 	if (!checkBaseEvent("До окончания пропуска осталось 30 дней", date("Y-m-d"), $number, $info->param->pass_number)) {
