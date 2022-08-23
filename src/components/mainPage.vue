@@ -68,7 +68,7 @@
                     }"
                     >
                     
-                    <template v-slot:item.action="{ item }">
+                    <template v-slot:[`item.action`]="{ item }">
                         <v-btn @click="$router.push({ name: 'checknumber', params: {number: item.number} })" height = "28" class = "ma-1 pl-2 pr-2 action-button"  color="info" depressed>
                             <v-icon class = "mr-2">mdi-information-outline</v-icon>
                             Подробнее                       
@@ -219,7 +219,9 @@ export default {
             this.$store.dispatch('updateNumberList',  {status: this.status, type: this.type, search: this.search});
         },
         updateFilter() {
+
             this.$store.dispatch('updateNumberList', {status: this.status, type: this.type, search: this.search});
+            console.log(this.NUMBER_LIST);
         },
 
         numberInfo() {

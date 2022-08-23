@@ -9,6 +9,8 @@ import addNumbers from '../components/addNumbers'
 import autoriseComponent from '../components/autoriseComponent'
 import checkNumber from '../components/checkNumber'
 import chengeNumber from '../components/chengeNumber'
+import dolgMain from '../components/dolgMain'
+import dolgAdd from '../components/dolgAdd'
 
 import store from '../store/store';
 import allLibs from '../lib/libs'
@@ -67,7 +69,19 @@ let router = new VueRouter ( {
                 name: 'updatenumber',
                 meta: {title: "Изменить номер"},
                 component: chengeNumber
-            }
+            },
+            {
+                path: '/dolgniki',
+                name: 'dolgMain',
+                meta: {title: "Должники"},
+                component: dolgMain
+            },
+            {
+                path: '/dolgniki-add',
+                name: 'dolgAdd',
+                meta: {title: "Добавление должников"},
+                component: dolgAdd
+            },
             
         ]
     }

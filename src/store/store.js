@@ -36,7 +36,7 @@ export default new Vuex.Store ({
             .then( (resp) => {
                 ctx.commit('updateNumberList', resp.data.result);
                 ctx.commit('updateStatusesList', resp.data.statuses);
-                console.log(resp)
+                console.log(resp.data.result)
             })
             .catch((error) => {
                         let rezText = "";

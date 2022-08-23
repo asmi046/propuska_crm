@@ -63,6 +63,8 @@ export default {
         {text: 'Проверить номер', icon: 'mdi-checkbox-multiple-marked-outline', to: "/check_number/"},
         {text: 'Экстренное оповещение', icon: 'mdi-alert-outline', to: {name:'massAlert'}},
         {text: 'Массовая проверка номеров', icon: 'mdi-check-all', to: {name:'massCheck'}},
+        {text: 'Должники управление', icon: 'mdi-credit-card-sync', to: {name:'dolgMain'}},
+        {text: 'Добавить должника', icon: 'mdi-credit-card-plus', to: {name:'dolgAdd'}},
     ],
   }),
 
