@@ -546,6 +546,193 @@ add_action( 'rest_api_init', function () {
 	}	
 
 
+// 
+// Добавление должника
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/add_dolgnik', array(
+		'methods'  => 'GET',
+		'callback' => 'add_dolgnik',
+		'args' => array(
+			'number' => array(
+				'required'          => true, 
+			),
+
+			'email' => array(
+				'required'          => true, 
+			),
+
+			'name' => array(
+				'default'           => "", 
+			)
+			
+		),
+	) );
+	});
+	
+	//https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/add_dolgnik?number=1
+	function add_dolgnik( WP_REST_Request $request) {
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+
+		$add_result = $serviceBase->insert( "dolg", [
+			"number" => $request["number"],
+			"email" => $request["email"],
+			"name" => $request["name"],
+		], ["%s", "%s", "%s"] );
+
+		if (!$add_result)
+			return new WP_Error( 'no_dolg_insert', 'При добавлении возникла ошибка попробуйте еще раз.', [ 'status' => 403 ] );
+
+		return $add_result;
+	}	
+
+
+// 
+// Список всех должников
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/get_all_dolgnik', array(
+		'methods'  => 'GET',
+		'callback' => 'get_all_dolgnik',
+		'args' => array(
+			'search' => array(
+				'default'           => "", 
+			),			
+		),
+	) );
+	});
+	
+	//https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/get_all_dolgnik?number=1
+	function get_all_dolgnik( WP_REST_Request $request) {
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+
+		$q = "SELECT * FROM `dolg`";
+		$array_all = $serviceBase->get_results($q);
+
+		return $array_all;
+	}	
+
+
+// 
+// Удаление должника
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/dell_dolgnik', array(
+		'methods'  => 'GET',
+		'callback' => 'dell_dolgnik',
+		'args' => array(
+			'id' => array(
+				'required'          => true, 
+			),
+
+			'mail' => array(
+				'required'          => true, 
+			),
+
+			'token' => array(
+				'required'          => true, 
+			)
+		),
+	) );
+	});
+	
+	//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/dell_dolgnik?id=
+	function dell_dolgnik( WP_REST_Request $request) {
+		
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+		
+		$token = $serviceBase->get_results("SELECT `autorizeKey` FROM `service_users` WHERE `mail` = '".$request["mail"]."'");
+	
+
+		if (empty($token))
+			return new WP_Error( 'no_token_incorrect', 'Токен некорректен', [ 'status' => 403 ] );
+
+		if ($token[0]->autorizeKey !== $request["token"]) 
+			return new WP_Error( 'no_token_incorrect', 'Токен некорректен', [ 'status' => 403 ] );
+		
+		
+
+		$dellRez = $serviceBase->delete( 'dolg', array("id" => $request["id"]) );
+	
+		if ($dellRez === false) 
+			return new WP_Error( 'no_delete_dolg', 'При удалении должника возникли ошибки', [ 'status' => 403 ] );
+		
+		 
+		return array("dell_count" => $dellRez);
+	}	
+
+
+// 
+// Массовое добавление должников
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/mass_add_dolgnik', array(
+		'methods'  => 'GET',
+		'callback' => 'mass_add_dolgnik',
+		'args' => array(
+			'list' => array(
+				'required' => true, 
+			),
+			
+		),
+	) );
+	});
+	
+	//https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/mass_add_dolgnik?number=1
+	function mass_add_dolgnik( WP_REST_Request $request) {
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+
+		$number_list = explode("\n", $request["list"]);
+
+		$addin_rez_array = [];
+		
+		foreach ($number_list as $nm) {
+			$searchin_nm = trim($nm);
+		
+			$q = "SELECT * FROM `service_number` WHERE `number` = '".$searchin_nm."'";
+			$array_info = $serviceBase->get_results($q);
+		
+			if (empty($array_info)) {
+				$addin_rez_array[] = [
+					"number" => $searchin_nm,
+					"adding"=> 0,
+					"email" => "", 
+					"msg" => "Не найден в базе"
+				];
+
+				continue;
+			}
+
+			$add_result = $serviceBase->insert( "dolg", [
+				"number" => $searchin_nm,
+				"email" => $array_info[0]->email,
+			], ["%s", "%s"] );
+
+			if (!$add_result) {
+				$addin_rez_array[] = [
+					"number" => $searchin_nm,
+					"adding"=> 0,
+					"email" => $array_info[0]->email,
+					"msg" => "Ошибка при добавлении"
+				];
+			} else {
+				$addin_rez_array[] = [
+					"number" => $searchin_nm,
+					"adding"=> 1,
+					"email" => $array_info[0]->email,
+					"msg" => "Номер добавлен"
+				];
+			}
+		}
+
+		return $addin_rez_array;
+
+	}	
+
 
 // 
 // Получение фильтрованного списка номеров
