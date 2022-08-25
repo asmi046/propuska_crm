@@ -515,6 +515,37 @@ add_action( 'rest_api_init', function () {
 		return $rez; 
 	}
 
+// 
+// Поиск номера в базе
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/search_number_in_base', array(
+		'methods'  => 'GET',
+		'callback' => 'search_number_in_base',
+		'args' => array(
+			'number' => array(
+				'required'          => true, 
+			)
+			
+		),
+	) );
+	});
+	
+	//https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/search_number_in_base?number=1
+	function search_number_in_base( WP_REST_Request $request) {
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+
+		$q = "SELECT * FROM `service_number` WHERE `number` = '".$request["number"]."'";
+		
+		$result = $serviceBase->get_results($q);
+		
+		if (!empty($result)) $result = $result[0];
+
+		return $result;
+	}	
+
+
 
 // 
 // Получение фильтрованного списка номеров
@@ -564,6 +595,8 @@ add_action( 'rest_api_init', function () {
 			"q" => $q
 		);
 	}	
+
+
 
 // 
 // Удаление номера

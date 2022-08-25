@@ -116,15 +116,20 @@ export default {
             this.errorMsgVisible = false;
             console.log(this.addingNumber);
             if (this.$refs.searchNumber.validate()) {
-                axios.get(this.REST_API_PREFIX + 'get_number_table',
+                axios.get(this.REST_API_PREFIX + 'search_number_in_base',
                 {
                     params: {
-                        status: "", 
-                        type: "", 
-                        searchstr: this.addingNumber, 
+                        number: this.addingNumber, 
                     }
                 })
                 .then( (resp) => {
+
+                    if (resp.data.length == 0) {
+                        this.errorMsg = "Номер не найден"
+                        this.errorMsgVisible = true
+                    } else {
+                        this.addingEmail = resp.data.email
+                    }
 
                     console.log(resp)
                 })
