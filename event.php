@@ -1,5 +1,6 @@
 <?
 // /usr/local/bin/php7.3 ~/propuska-mkad-ttk-sk.ru/public_html/bot/event.php
+// php ../var/www/back2/event/event.php
 // require __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . "/../wp-config.php";
 
@@ -186,10 +187,19 @@ foreach ($numbers as $elem) {
    echo "\n\r";
    print_r($info);
    echo "\n\r";
-
+   
    $email_tosendMn = array("info@propusk247.ru", "asmi046@gmail.com", $elem->email);
 
-   $RazoviPropuskCount += checRazoviPropusk($elem->number, $info, $email_tosendMn);
+	if (!empty($elem->email_dop)) {
+		$dop_number = explode(",", $elem->email_dop);
+
+		for ($i =0; $i<count($dop_number); $i++){
+			$email_tosendMn[] = trim($dop_number[$i]); 
+		}
+	}
+
+
+	$RazoviPropuskCount += checRazoviPropusk($elem->number, $info, $email_tosendMn);
    $PostoyanniPropuskCount += checPostPropusk($elem->number, $info, $email_tosendMn);
    $OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
    $anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);

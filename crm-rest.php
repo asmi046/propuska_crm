@@ -299,6 +299,10 @@ add_action( 'rest_api_init', function () {
 				'default'           => "",
 				'required'          => true,        		
 			),
+			
+			'email_dop' => array(
+				'default'           => "",        		
+			),
 
 			'phone' => array(
 				'default'           => "",      		
@@ -319,6 +323,7 @@ function update_number_info( WP_REST_Request $request ){
 	$addResult = $serviceBase->update('service_number', array(
 		"number" => $request["number"],
 		"email" => $request["email"],
+		"email_dop" => $request["email_dop"],
 		"phone" => $request["phone"],
 		"sts" => $request["sts"]
 	),

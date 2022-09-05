@@ -40,6 +40,12 @@
           outlined
           :rules="requiredRules"
            />
+          
+          <v-text-field
+          v-model="dataOfNumber.email_dop"
+          label = "Дополнительные e-mail"
+          outlined
+           />
 
            <v-text-field
           label = "Телефон"
@@ -80,6 +86,7 @@ export default {
         id:"",
         number:"",
         email:"",
+        email_dop:"",
         phone:"",
         sts:""
       },
@@ -109,6 +116,7 @@ export default {
                         id: this.dataOfNumber.id,
                         number: this.dataOfNumber.number,
                         email: this.dataOfNumber.email,
+                        email_dop: this.dataOfNumber.email_dop,
                         phone: this.dataOfNumber.phone,
                         sts: this.dataOfNumber.sts
                     }
@@ -158,6 +166,7 @@ export default {
     console.log(element.id);
     this.dataOfNumber.number = element.number;
     this.dataOfNumber.email = element.email;
+    this.dataOfNumber.email_dop = element.email_dop;
     this.dataOfNumber.phone = element.phone;
     this.dataOfNumber.sts = element.sts;
 
