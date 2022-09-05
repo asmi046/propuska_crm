@@ -697,7 +697,8 @@ add_action( 'rest_api_init', function () {
 		
 		foreach ($number_list as $nm) {
 			$searchin_nm = trim($nm);
-		
+			
+			if (empty($searchin_nm)) continue;
 			$q = "SELECT * FROM `service_number` WHERE `number` = '".$searchin_nm."'";
 			$array_info = $serviceBase->get_results($q);
 		
