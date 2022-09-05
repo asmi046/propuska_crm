@@ -580,9 +580,15 @@ add_action( 'rest_api_init', function () {
 	function add_dolgnik( WP_REST_Request $request) {
 		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 
+		$info = get_number_info($request["number"]);
+		if (empty($info))
+			return new WP_Error( 'no_dolg_insert', 'Не удалось определить дату выпуска пропуска', [ 'status' => 403 ] );
+		$rez = array_reverse($info->passes);
+
 		$add_result = $serviceBase->insert( "dolg", [
 			"number" => $request["number"],
 			"email" => $request["email"],
+			"adding_data" => (string)date('Y-m-d H:i:s', strtotime($rez[0]->valid_from)),
 			"name" => $request["name"],
 		], ["%s", "%s", "%s"] );
 
@@ -703,6 +709,7 @@ add_action( 'rest_api_init', function () {
 			$array_info = $serviceBase->get_results($q);
 		
 			if (empty($array_info)) {
+				
 				$addin_rez_array[] = [
 					"number" => $searchin_nm,
 					"adding"=> 0,
@@ -713,9 +720,16 @@ add_action( 'rest_api_init', function () {
 				continue;
 			}
 
+			$info = get_number_info($searchin_nm);
+				if (empty($info))
+					return new WP_Error( 'no_dolg_insert', 'Не удалось определить дату выпуска пропуска', [ 'status' => 403 ] );
+				$rez = array_reverse($info->passes);
+				
+
 			$add_result = $serviceBase->insert( "dolg", [
 				"number" => $searchin_nm,
 				"email" => $array_info[0]->email,
+				"adding_data" => (string)date('Y-m-d H:i:s', strtotime($rez[0]->valid_from))
 			], ["%s", "%s"] );
 
 			if (!$add_result) {

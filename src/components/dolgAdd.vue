@@ -178,7 +178,7 @@ export default {
                         this.errorMsg = "Номер не добавлен к должникам"
                         this.errorMsgVisible = true
                     } else {
-                        this.errorMsg = "Номер не добавлен в базу должников"
+                        this.errorMsg = "Номер добавлен в базу должников"
                         this.errorMsgOk = "success"
                         this.errorMsgVisible = true
                     }
