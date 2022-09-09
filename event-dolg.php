@@ -31,23 +31,23 @@ foreach ($numbers as $elem) {
 
     if ($deycount == 11) {
 
-        $mailSabj = "Нет оплаты за пропуск ".$number." более 10 дней";
-		$mailContent = "Здравствуйте, за пропуск на автомобиль ".$number." нет оплаты более 10 дней.";
+        $mailSabj = "Нет оплаты за пропуск ".$elem->number." более 10 дней";
+		$mailContent = "Здравствуйте, за пропуск на автомобиль ".$elem->number." нет оплаты более 10 дней.";
 
 		wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
 
     }
 
     if ($deycount == 15) {
-        $mailSabj = "Нет оплаты за пропуск ".$number." более двух недель";
-		$mailContent = "Здравствуйте, за пропуск на автомобиль ".$number." более двух недель";
+        $mailSabj = "Нет оплаты за пропуск ".$elem->number." более двух недель";
+		$mailContent = "Здравствуйте, за пропуск на автомобиль ".$elem->number." более двух недель";
 
 		wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
     }
 
     if ($deycount == 20) {
-        $mailSabj = "Нет оплаты за пропуск ".$number.". Отправляем на аннуляцию.";
-		$mailContent = "Здравствуйте, за пропуск на автомобиль ".$number.". Отправляем на аннуляцию.";
+        $mailSabj = "Нет оплаты за пропуск ".$elem->number.". Отправляем на аннуляцию.";
+		$mailContent = "Здравствуйте, за пропуск на автомобиль ".$elem->number.". Отправляем на аннуляцию.";
 
 		wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
     }
