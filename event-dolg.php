@@ -46,8 +46,10 @@ foreach ($numbers as $elem) {
     }
 
     if ($deycount == 20) {
+        $date = strtotime('+3 days');
+        
         $mailSabj = "Нет оплаты за пропуск ".$elem->number.". Отправляем на аннуляцию.";
-		$mailContent = "Здравствуйте, за пропуск на автомобиль ".$elem->number.". Отправляем на аннуляцию.";
+		$mailContent = "Здравствуйте, оплата за пропуск ".$elem->number.".  не поступила. В случае отсутствия оплаты пропуск будет аннулирован ".date('d.m.Y', $date);
 
 		wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
     }
