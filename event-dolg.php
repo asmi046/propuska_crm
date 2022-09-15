@@ -40,7 +40,7 @@ foreach ($numbers as $elem) {
 
     if ($deycount == 15) {
         $mailSabj = "Нет оплаты за пропуск ".$elem->number." более двух недель";
-		$mailContent = "Здравствуйте, за пропуск на автомобиль ".$elem->number." более двух недель";
+		$mailContent = "Здравствуйте, за пропуск на автомобиль ".$elem->number." нет оплаты более двух недель";
 
 		wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
     }

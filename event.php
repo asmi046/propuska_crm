@@ -50,7 +50,7 @@ function checRazoviPropusk($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "Вышел разовый пропуск для ".$number." до ".$info->param->end_data;
-		$mailContent = "Здравствуйте, ".$number." - вышел разовый пропуск на ".$info->param->type." с ".$info->param->start_data." по ".$info->param->end_data." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
+		$mailContent = "Здравствуйте, ".$number." - вышел разовый пропуск на ".$info->param->type." с ".date("Y-m-d", strtotime($info->param->start_data))." по ".date("Y-m-d", strtotime($info->param->end_data))." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
 		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
