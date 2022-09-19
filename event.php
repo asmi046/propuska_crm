@@ -60,6 +60,32 @@ function checRazoviPropusk($number, $info, $email_tosendMn) {
 	}
 }
 
+function checRazoviPropusk_end($number, $info, $email_tosendMn) {
+	
+	global $headersMn, $serviceBase;
+
+	if ($info->param->seria !== "ББ") return 0;
+	$now = date("Y-m-d 00:00:00");
+	$start = date("Y-m-d 00:00:00", strtotime($info->param->end_data));
+	
+	if (strtotime($now) !== strtotime($start)) return 0;
+
+	if (!checkBaseEvent("Выпущен временный пропуск заканчивается сегодня", date("Y-m-d"), $number, $info->param->pass_number)) {
+
+		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
+		
+		$mailSabj = "Временный пропуск на машину ".$number." заканчивается сегодня";
+		$mailContent .= "Уважаемый клиент!<br/>";
+		$mailContent = "Действие разового пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.") для автомобиля , ".$number." заканчивается сегодня.";
+		$mailContent .= "<br/>";
+		$mailContent .= "<br/>";
+		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
+		wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
+
+		return 1;
+	}
+}
+
 function checPostPropusk($number, $info, $email_tosendMn) {
 	
 	global $headersMn, $serviceBase;
@@ -126,7 +152,7 @@ function checAnul($number, $info, $email_tosendMn) {
 	if (!isset($info->param->anul_data)) return 0;
 	
 	$now = date("Y-m-d");
-	// $now = date("Y-m-d", strtotime("2021-09-15"));
+	// $now = date("Y-m-d", strtotime("2022-09-15"));
 	$start = date("Y-m-d", strtotime($info->param->anul_data));
 	
 	if (strtotime($now) !== strtotime($start)) return 0;
@@ -174,11 +200,15 @@ $numbers =  $serviceBase->get_results("SELECT * FROM `service_number`");
 $index = 0;
 
 $RazoviPropuskCount = 0;
+$RazoviPropuskCount_en = 0;
 $PostoyanniPropuskCount = 0;
 $OutPropuskCount = 0;
 $anulPropuskCount = 0;
 
 foreach ($numbers as $elem) {
+	
+	// if ($elem->number !== "М155ОВ67") continue;
+
 	$info = update_number_info_ev($elem->number, "");
 	
    if (empty($info->param->dey_count)) continue;
@@ -200,6 +230,7 @@ foreach ($numbers as $elem) {
 
 
 	$RazoviPropuskCount += checRazoviPropusk($elem->number, $info, $email_tosendMn);
+	$RazoviPropuskCount_en += checRazoviPropusk_end($elem->number, $info, $email_tosendMn);
    $PostoyanniPropuskCount += checPostPropusk($elem->number, $info, $email_tosendMn);
    $OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
    $anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
@@ -215,6 +246,7 @@ foreach ($numbers as $elem) {
 		echo "\n\r";
 	 
 		$RazoviPropuskCount += checRazoviPropusk($elem->number, $info, $email_tosendMn);
+		$RazoviPropuskCount_en += checRazoviPropusk_end($elem->number, $info, $email_tosendMn);
 		$PostoyanniPropuskCount += checPostPropusk($elem->number, $info, $email_tosendMn);
 		$OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
 		$anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
@@ -232,6 +264,7 @@ foreach ($numbers as $elem) {
 		echo "\n\r";
 	 
 		$RazoviPropuskCount += checRazoviPropusk($elem->number, $info, $email_tosendMn);
+		$RazoviPropuskCount_en += checRazoviPropusk_end($elem->number, $info, $email_tosendMn);
 		$PostoyanniPropuskCount += checPostPropusk($elem->number, $info, $email_tosendMn);
 		$OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
 		$anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
