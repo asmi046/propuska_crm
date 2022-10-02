@@ -112,7 +112,8 @@ export default {
             axios.get(this.REST_API_PREFIX + 'number_info',
             {
                     params: {
-                        number: this.number.replace(/\s/g,''),
+                        // number: this.number.replace(/\s/g,''),
+                        number: this.number,
                     }
             })
             

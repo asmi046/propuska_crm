@@ -488,20 +488,20 @@ function ch_number_after_add( WP_REST_Request $request ){
 // Проверка номера через сервис
 // 
 
-add_action( 'rest_api_init', function () {
-	register_rest_route( 'lscrm/v2', '/number_info', array(
-		'methods'  => 'GET',
-		'callback' => 'number_info',
-		'args' => array(
-			'number' => array(
-				'default'           => "",
-				'required'          => true,        		
-			)
-		),
-	) );
+	add_action( 'rest_api_init', function () {
+		register_rest_route( 'lscrm/v2', '/number_info', array(
+			'methods'  => 'GET',
+			'callback' => 'number_info',
+			'args' => array(
+				'number' => array(
+					'default'           => "",
+					'required'          => true,        		
+				)
+			),
+		) );
 	});
 	
-	//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/number_info?number=Х983ХК750
+	//https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/number_info?number=Х983ХК750
 	function number_info( WP_REST_Request $request) {
 
 		$info = get_number_info($request["number"]);
@@ -520,6 +520,44 @@ add_action( 'rest_api_init', function () {
 		return $rez; 
 	}
 
+// 
+// Проверка номера через сервис ЗАГРАННОМЕРА
+// 
+
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'lscrm/v2', '/number_info_zag', array(
+		'methods'  => 'GET',
+		'callback' => 'number_info_zag',
+		'args' => array(
+			'number' => array(
+				'default'           => "",
+				'required'          => true,        		
+			)
+		),
+	) );
+});
+
+//https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/number_info_zag?number=Х983ХК750
+function number_info_zag( WP_REST_Request $request) {
+
+	
+
+	$info = get_number_info($request["number"]);
+
+	if (empty($info)) return [];
+	
+	$rez = array_reverse($info->passes);
+	
+	foreach ($rez as $element) {
+		$statuses = get_status($element);
+		$element->sys_status = $statuses["sys_status"];
+		$element->deycount = $statuses["deycount"];
+		$element->mms = "ZZZZ";
+	}
+
+	return $rez; 
+}
+	
 // 
 // Поиск номера в базе
 // 
