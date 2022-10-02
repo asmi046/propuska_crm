@@ -702,7 +702,7 @@ add_action( 'rest_api_init', function () {
 		$addin_rez_array = [];
 		
 		foreach ($number_list as $nm) {
-			$searchin_nm = trim($nm);
+			$searchin_nm = str_replace(" ", '',trim($nm));
 			
 			if (empty($searchin_nm)) continue;
 			$q = "SELECT * FROM `service_number` WHERE `number` = '".$searchin_nm."'";

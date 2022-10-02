@@ -133,7 +133,7 @@ data() {
           newline: "\r\n",
           encoding: "WINDOWS-1251",
           complete: (results) => {
-            this.readetCSV = results.data
+            this.readetCSV = results.data.replace(/\s/g,'')
             this.addNumbersToBase()
           }
         });

@@ -111,7 +111,7 @@ export default {
                    axios.get(this.REST_API_PREFIX + 'mass_check',
                 {
                         params: {
-                            number: elem,
+                            number: elem.replace(/\s/g,''),
                         }
                     })
                     .then( (resp) => {

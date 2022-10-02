@@ -104,12 +104,15 @@ export default {
         },
 
         getNumberInfo () {
+            if (this.number == undefined) return;
+
             this.loadingShow = true;
             this.resultShow = false;
+
             axios.get(this.REST_API_PREFIX + 'number_info',
             {
                     params: {
-                        number: this.number,
+                        number: this.number.replace(/\s/g,''),
                     }
             })
             
