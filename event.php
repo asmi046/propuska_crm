@@ -156,6 +156,7 @@ function checAnul($number, $info, $email_tosendMn) {
 	$start = date("Y-m-d", strtotime($info->param->anul_data));
 	
 	if (strtotime($now) !== strtotime($start)) return 0;
+	// if ((strtotime("12.10.2022") !== strtotime($start))&&(strtotime("13.10.2022") !== strtotime($start))) return 0;
 
 	if (!checkBaseEvent("Аннулирован пропуск", date("Y-m-d"), $number, $info->param->pass_number)) {
 
