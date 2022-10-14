@@ -537,16 +537,43 @@ add_action( 'rest_api_init', function () {
 	) );
 });
 
+//
+// Все варианты загран номеров 
+//
+
+function get_all_number_variant($number, &$all_var) {
+	$i=0;
+	do { 
+		if ((ctype_digit($number[$i]) && ctype_alpha($number[$i+1]))||(ctype_alpha($number[$i]) && ctype_digit($number[$i+1])) ) {
+			$ns = str_replace($number[$i].$number[$i+1],$number[$i]." ".$number[$i+1],$number);
+			$all_var[] = $ns;
+			get_all_number_variant($ns, $all_var);
+		}
+		
+		$i++;
+	} while ($i<strlen($number)-2);
+	
+	return $all_var;
+}
+
 //https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/number_info_zag?number=Х983ХК750
 function number_info_zag( WP_REST_Request $request) {
 
+	$all_var = [];
+	$all_var[] = $request["number"];
+	$rez_var = get_all_number_variant($request["number"], $all_var);
+
+	$passes=[];
+	foreach ($rez_var as $number_elem)
+	{
+		$info = get_number_info($number_elem);
+		$passes = array_merge($passes, $info->passes);
+	}
+
+	if (empty($passes)) return [];
 	
 
-	$info = get_number_info($request["number"]);
-
-	if (empty($info)) return [];
-	
-	$rez = array_reverse($info->passes);
+	$rez = array_reverse($passes);
 	
 	foreach ($rez as $element) {
 		$statuses = get_status($element);
