@@ -6,6 +6,7 @@ require_once __DIR__ . "/../wp-config.php";
 
 define("COMPANY_NAME", "Пропуска на МКАД");
 define("MAIL_RESEND", "zakaz@propuska-mkad-ttk-sk.ru");
+// define("MAIL_RESEND", "asmi-work046@yandex.ru");
 
 $headersMn = array(
 	'From: '.COMPANY_NAME.' <'.MAIL_RESEND.'>',
@@ -13,6 +14,19 @@ $headersMn = array(
 );
 
 
+// $mailSabj = "Тест";
+// $mailContent = "Тестируем отправку";
+
+// $email_tosendMn = array("info@propusk247.ru", "asmi046@gmail.com");
+
+// $rez = wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
+
+// if ($rez) echo "Send!"; else {
+	
+// 	$errorMessage = error_get_last()['message'];
+// 	echo "NON Send! ".$errorMessage;
+// } 
+// return;
 
 $serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 
@@ -124,7 +138,7 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 	$deycount = floor((strtotime($end) - strtotime($now) ) / (60 * 60 * 24));
 	
 
-	// if (($deycount != 27)&&($deycount != 28)&&($deycount != 29)&&($deycount != 30)) return 0;
+	// if (($deycount != 24)&&($deycount != 25)&&($deycount != 26)&&($deycount != 27)&&($deycount != 28)&&($deycount != 29)&&($deycount != 30)) return 0;
 	if ($deycount != 30) return 0;
 
 	
@@ -156,7 +170,8 @@ function checAnul($number, $info, $email_tosendMn) {
 	$start = date("Y-m-d", strtotime($info->param->anul_data));
 	
 	if (strtotime($now) !== strtotime($start)) return 0;
-	// if ((strtotime("12.10.2022") !== strtotime($start))&&(strtotime("13.10.2022") !== strtotime($start))) return 0;
+
+	// if ((strtotime("30.12.2022") !== strtotime($start))&&(strtotime("30.12.2022") !== strtotime($start))) return 0;
 	// if (strtotime("25.10.2022") !== strtotime($start)) return 0;
 
 	if (!checkBaseEvent("Аннулирован пропуск", date("Y-m-d"), $number, $info->param->pass_number)) {
@@ -283,5 +298,9 @@ $serviceBase->insert('cheking_log', array(
 	"out30" => $OutPropuskCount,
 	"anul" => $anulPropuskCount,
 ));
+
+
+
+
 
 ?>
