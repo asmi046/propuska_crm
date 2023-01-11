@@ -631,7 +631,7 @@ function number_info_zag( WP_REST_Request $request) {
 	$passes=[];
 	foreach ($rez_var as $number_elem)
 	{
-		$info = get_number_info_new($number_elem);
+		$info = get_number_info($number_elem);
 		$passes = array_merge($passes, $info->passes);
 	}
 
