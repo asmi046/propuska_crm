@@ -566,6 +566,13 @@ add_action( 'rest_api_init', function () {
 	) );
 });
 
+
+function cmp_function($a, $b){
+	return (strtotime($a['valid_to']) < strtotime($b['valid_to']));
+}
+ 
+
+
 //https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/number_info_new?number=Х983ХК750
 function number_info_new( WP_REST_Request $request) {
 
@@ -573,7 +580,10 @@ function number_info_new( WP_REST_Request $request) {
 
 	if (empty($info)) return [];
 	
-	$rez = array_reverse($info->passes);
+	// $rez = array_reverse($info->passes);
+	$rez = $info->passes;
+
+	uksort($rez, 'cmp_function');
 	
 	foreach ($rez as $element) {
 		$statuses = get_status($element);
