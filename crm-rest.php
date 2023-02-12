@@ -561,6 +561,10 @@ add_action( 'rest_api_init', function () {
 			'number' => array(
 				'default'           => "",
 				'required'          => true,        		
+			),
+			'token' => array(
+				'default'           => "",
+				'required'          => true,        		
 			)
 		),
 	) );
@@ -571,10 +575,30 @@ function cmp_function($a, $b){
 	return (strtotime($a['valid_to']) < strtotime($b['valid_to']));
 }
  
+function reCAP($token) {
+	$sendData = array(
+		'response' => $token,
+		'secret' => '6LdXHxAkAAAAAJvZCM_S1q9suO-rtsaEWER7OxUM'
+	);
+	
+	$oCurl = curl_init();
+	curl_setopt($oCurl, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
+	curl_setopt($oCurl, CURLOPT_POST, true);
+	curl_setopt($oCurl, CURLOPT_HEADER, false);
+	curl_setopt($oCurl, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($oCurl, CURLOPT_POSTFIELDS, $sendData);
+	$result = curl_exec($oCurl);
+	curl_close($oCurl);
 
+	return json_decode($result);
+}
 
 //https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/number_info_new?number=Х983ХК750
 function number_info_new( WP_REST_Request $request) {
+
+	$result = reCAP($request["token"]);
+
+	if ((!$result->success)||($result->score < 0.5)) wp_die("GO TO->", 403);
 
 	$info = get_number_info_new($request["number"]);
 
@@ -583,7 +607,7 @@ function number_info_new( WP_REST_Request $request) {
 	// $rez = array_reverse($info->passes);
 	$rez = $info->passes;
 
-	uksort($rez, 'cmp_function');
+	// uksort($rez, 'cmp_function');
 	
 	foreach ($rez as $element) {
 		$statuses = get_status($element);
