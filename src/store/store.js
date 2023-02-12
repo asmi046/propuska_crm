@@ -6,7 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store ({
     state: {
-        rest_api_prefix:"https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/",
+        rest_api_prefix:"https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/",
         // Поля авторизации
         autorise: false,
         userName: "",

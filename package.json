@@ -7,8 +7,7 @@
     "send_to_host_rest": "scp crm-rest.php manist1h_crm@manist1h.beget.tech:propuska-mkad-ttk-sk.ru/public_html/wp-content/themes/propuska/",
     "send_to_host_event_serv": "scp event.php root@45.141.76.45:../var/www/back2/event/",
     "send_to_host_event_dolg_serv": "scp event-dolg.php root@45.141.76.45:../var/www/back2/event/",
-    "send_to_host_rest_serv": "scp crm-rest.php root@45.141.76.45:../var/www/back2/wp-content/themes/twentytwentytwo/", 
-
+    "send_to_host_rest_serv": "scp crm-rest.php root@45.141.76.45:../var/www/back2/wp-content/themes/twentytwentytwo/",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
@@ -28,12 +27,12 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
     "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^6.2.2",
+    "eslint": "^8.34.0",
+    "eslint-plugin-vue": "^9.9.0",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
     "vue-cli-plugin-vuetify": "~2.4.2",
@@ -52,8 +51,11 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "@typescript-eslint/no-loss-of-precision": "error"
+    }
   },
+
   "browserslist": [
     "> 1%",
     "last 2 versions",

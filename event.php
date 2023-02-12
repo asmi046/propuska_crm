@@ -192,7 +192,7 @@ function checAnul($number, $info, $email_tosendMn) {
 }
 
 function update_number_info_ev($number, $type) {
-	$url = "https://back2.propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/update_number?number=".urlencode($number); 
+	$url = "https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/update_number?number=".urlencode($number); 
 	
 	if (!empty($type))
 		$url = $url."&passtype=".$type;
