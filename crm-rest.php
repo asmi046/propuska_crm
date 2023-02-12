@@ -42,12 +42,8 @@ function get_number_info_new($number) {
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $url);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	// curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-	// curl_setopt($curl, CURLOPT_SSLVERSION, 3);
-	// curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
-	// curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
 	$str = curl_exec($curl);
 
 	if($str === false)
@@ -602,8 +598,14 @@ function number_info_new( WP_REST_Request $request) {
 
 	$info = get_number_info_new($request["number"]);
 
+	if (empty($info->passes))
+		$info = get_number_info_new($request["number"]);
+
+	if (empty($info->passes))
+
 	if (empty($info)) return [];
-	
+		if ((!$result->success)||($result->score < 0.5)) wp_die("Ошибка CH попробуйте снова", 403);
+
 	// $rez = array_reverse($info->passes);
 	$rez = $info->passes;
 
