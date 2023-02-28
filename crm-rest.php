@@ -596,10 +596,41 @@ function number_info_new( WP_REST_Request $request) {
 
 	if ((!$result->success)||($result->score < 0.5)) wp_die("GO TO->", 403);
 
-	$info = get_number_info_new($request["number"]);
+	$number = strtr($request["number"], [
+		'A' => 'А', 
+		'B' => 'В', 
+		'E' => 'Е', 
+		'K' => 'К', 
+		'M' => 'М', 
+		'H' => 'Н', 
+		'O' => 'О', 
+		'P' => 'Р', 
+		'C' => 'С', 
+		'T' => 'Т', 
+		'Y' => 'У', 
+		'X' => 'Х',
+
+		'a' => 'А', 
+		'b' => 'В', 
+		'e' => 'Е', 
+		'k' => 'К', 
+		'm' => 'М', 
+		'h' => 'Н', 
+		'o' => 'О', 
+		'p' => 'Р', 
+		'c' => 'С', 
+		't' => 'Т', 
+		'y' => 'У', 
+		'x' => 'Х',
+	]);
+
+	// M015KA13
+	// М015КА13
+
+	$info = get_number_info_new($number);
 
 	if (empty($info->passes))
-		$info = get_number_info_new($request["number"]);
+		$info = get_number_info_new($number);
 
 	if (empty($info->passes))
 
