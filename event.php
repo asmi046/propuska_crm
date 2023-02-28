@@ -109,7 +109,7 @@ function checPostPropusk($number, $info, $email_tosendMn) {
 	// $now = date("Y-m-d", strtotime("2021-09-15"));
 	$start = date("Y-m-d 00:00:00", strtotime($info->param->start_data));
 	
-	if (strtotime($now) !== strtotime($start)) return 0;
+	// if (strtotime($now) !== strtotime($start)) return 0; //аннуляция по любой дате
 
 	if (!checkBaseEvent("Выпущен постоянный пропуск", date("Y-m-d"), $number, $info->param->pass_number)) {
 
