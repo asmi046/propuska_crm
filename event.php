@@ -109,7 +109,7 @@ function checPostPropusk($number, $info, $email_tosendMn) {
 	// $now = date("Y-m-d", strtotime("2021-09-15"));
 	$start = date("Y-m-d 00:00:00", strtotime($info->param->start_data));
 	
-	// if (strtotime($now) !== strtotime($start)) return 0; //аннуляция по любой дате
+	if (strtotime($now) !== strtotime($start)) return 0; 
 
 	if (!checkBaseEvent("Выпущен постоянный пропуск", date("Y-m-d"), $number, $info->param->pass_number)) {
 
@@ -169,12 +169,12 @@ function checAnul($number, $info, $email_tosendMn) {
 	// $now = date("Y-m-d", strtotime("2022-10-25"));
 	$start = date("Y-m-d", strtotime($info->param->anul_data));
 	
-	if (strtotime($now) !== strtotime($start)) return 0;
+	// if (strtotime($now) !== strtotime($start)) return 0; //аннуляция по любой дате
 
 	// if ((strtotime("30.12.2022") !== strtotime($start))&&(strtotime("30.12.2022") !== strtotime($start))) return 0;
 	// if (strtotime("25.10.2022") !== strtotime($start)) return 0;
 
-	if (!checkBaseEvent("Аннулирован пропуск", date("Y-m-d"), $number, $info->param->pass_number)) {
+	if (!checkBaseEvent("Аннулирован пропуск", date("Y-m-d", strtotime($info->param->anul_data)), $number, $info->param->pass_number)) {
 
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
