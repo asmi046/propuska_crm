@@ -1266,10 +1266,10 @@ add_action( 'rest_api_init', function () {
 			$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 			
 
-			$numberInfo = get_number_info_new($request["number"]);
+			$numberInfo = get_number_info($request["number"]);
 
-			if (empty($numberInfo->passes))
-				$numberInfo = get_number_info_new($request["number"]);
+			// if (empty($numberInfo->passes))
+			// 	$numberInfo = get_number_info_new($request["number"]);
 
 			$numberInfo = $numberInfo->passes;
 
