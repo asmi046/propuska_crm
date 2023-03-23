@@ -424,13 +424,13 @@ function add_one_numbers( WP_REST_Request $request ){
 
 	foreach ($request["element"] as $elem) {
 	
-	if (!isset($elem[1])) continue;
+	if (!isset($elem[0])) continue;
 	$mail = "";
-	if (isset($elem[0])) $mail = $elem[0];
+	if (isset($elem[1])) $mail = $elem[0];
 
 
 	 $addingArray = array(
-	 		"number" => $elem[1],
+	 		"number" => $elem[0],
 	 		"email" => $mail
 	 );
 
@@ -439,7 +439,7 @@ function add_one_numbers( WP_REST_Request $request ){
 
 	if (!empty($addResult)) $addetCount++;
 	 $numbers[] = array(
-	 	"number" => $elem[1],
+	 	"number" => $elem[0],
 	 	"email" => $mail,
 	 	"result" => $addResult
 	);
@@ -447,7 +447,7 @@ function add_one_numbers( WP_REST_Request $request ){
 	
 	}
 
-	return array("result" => $numbers, "count" => $addetCount);
+	return array("result" => $numbers, "count" => $addetCount, "inn_data" => $request["element"]);
 
 	
 }
