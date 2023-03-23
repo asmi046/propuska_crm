@@ -63,8 +63,8 @@ function checRazoviPropusk($number, $info, $email_tosendMn) {
 
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
-		$mailSabj = "Вышел разовый пропуск для ".$number." до ".$info->param->end_data;
-		$mailContent = "Здравствуйте, ".$number." - вышел разовый пропуск на ".$info->param->type." с ".date("Y-m-d", strtotime($info->param->start_data))." по ".date("Y-m-d", strtotime($info->param->end_data))." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
+		$mailSabj = "Вышел разовый пропуск для ".$number." до ".date("d.m.Y", strtotime($info->param->end_data));
+		$mailContent = "Здравствуйте, ".$number." - вышел разовый пропуск на ".$info->param->type." с ".date("d.m.Y", strtotime($info->param->start_data))." по ".date("d.m.Y", strtotime($info->param->end_data))." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
 		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
@@ -115,8 +115,8 @@ function checPostPropusk($number, $info, $email_tosendMn) {
 
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
-		$mailSabj = "Вышел постоянный пропуск для ".$number." до ".$info->param->end_data;
-		$mailContent = "Здравствуйте, ".$number." - вышел постоянный пропуск на ".$info->param->type." с ".$info->param->start_data." по ".$info->param->end_data." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
+		$mailSabj = "Вышел постоянный пропуск для ".$number." до ".date("d.m.Y", strtotime($info->param->end_data));
+		$mailContent = "Здравствуйте, ".$number." - вышел постоянный пропуск на ".$info->param->type." с ".date("d.m.Y", strtotime($info->param->start_data))." по ".date("d.m.Y", strtotime($info->param->end_data))." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
 		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
@@ -147,7 +147,7 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "До окончания пропуска на ".$number." осталось 30 дней";
-		$mailContent = "Здравствуйте, пропуск на ".$number."  заканчивается ".$info->param->end_data.". Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
+		$mailContent = "Здравствуйте, пропуск на ".$number."  заканчивается ".date("d.m.Y", strtotime($info->param->end_data)).". Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
 		$mailContent .= "<br/>";
 		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
@@ -179,7 +179,7 @@ function checAnul($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "Пропуск ".$number." аннулирован";
-		$mailContent = "Здравствуйте, пропуск ".$number." - Аннулирован ".$info->param->anul_data." Рекомендуем ограничить поездки по МКАД и внутри Москвы для избежания штрафов.";
+		$mailContent = "Здравствуйте, пропуск ".$number." - Аннулирован ".date("d.m.Y", strtotime($info->param->anul_data))." Рекомендуем ограничить поездки по МКАД и внутри Москвы для избежания штрафов.";
 		$mailContent .= "<br/>";
 		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
