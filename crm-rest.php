@@ -5,6 +5,21 @@
 // header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT');
 // header('Access-Control-Max-Age: 600');
 
+function predobr_n_array($in_numbers) {
+	$numbers = $in_numbers;
+	for ($i = 0; $i<count($numbers); $i++) {
+		for ($j = 0; $j<count($numbers)-1; $j++) {
+			if (strtotime($numbers[$j]["valid_to"]) > strtotime($numbers[$j+1]["valid_to"])) {
+				$ppp = $numbers[$j]["valid_to"];
+				$numbers[$j]["valid_to"] = $numbers[$j+1]["valid_to"];
+				$numbers[$j+1]["valid_to"] = $ppp;
+			}
+		}
+	}
+
+	return $numbers;
+}
+
 function get_number_info($number) {
 
 	$url = BI_SERVICE_URL."?apikey=".BI_SERVICE_TOKEN."&truck_num=".urlencode($number);
@@ -28,10 +43,8 @@ function get_number_info($number) {
 
 	curl_close($curl);
 
-	return json_decode($str);
+	return predobr_n_array(json_decode($str));
 	
-
-	// return json_decode(file_get_contents($url."?apikey=".$token."&truck_num=".urlencode($number)));
 }
 
 
