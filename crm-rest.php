@@ -47,6 +47,33 @@ function get_number_info($number) {
 	
 }
 
+function get_number_info_for_site($number) {
+
+	$url = BI_SERVICE_URL_FOR_SITE."?apikey=".BI_SERVICE_TOKEN."&truck_num=".urlencode($number);
+
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $url);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	// curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+	// curl_setopt($curl, CURLOPT_SSLVERSION, 3);
+	// curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+	// curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
+	$str = curl_exec($curl);
+
+	if($str === false)
+	{
+   	 	echo 'Ошибка curl: ' . curl_error($curl);
+		return false;
+	}
+
+	curl_close($curl);
+
+	return predobr_n_array(json_decode($str));
+	
+}
+
 
 function get_number_info_new($number) {
 
@@ -553,6 +580,41 @@ function ch_number_after_add( WP_REST_Request $request ){
 			$element->sys_status = $statuses["sys_status"];
 			$element->deycount = $statuses["deycount"];
 			$element->mms = "ZZZZ";
+		}
+
+		return $rez; 
+	}
+// 
+// Проверка номера через сервис (Для сайта)
+// 
+
+	add_action( 'rest_api_init', function () {
+		register_rest_route( 'lscrm/v2', '/number_info_for_site', array(
+			'methods'  => 'GET',
+			'callback' => 'number_info_for_site',
+			'args' => array(
+				'number' => array(
+					'default'           => "",
+					'required'          => true,        		
+				)
+			),
+		) );
+	});
+	
+	//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/number_info_for_site?number=Х983ХК750
+	function number_info_for_site( WP_REST_Request $request) {
+
+		$info = get_number_info_for_site($request["number"]);
+
+		if (empty($info)) return [];
+		
+		$rez = array_reverse($info->passes);
+		
+		foreach ($rez as $element) {
+			$statuses = get_status($element);
+			$element->sys_status = $statuses["sys_status"];
+			$element->deycount = $statuses["deycount"];
+			$element->mms = "->>";
 		}
 
 		return $rez; 
