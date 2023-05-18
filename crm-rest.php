@@ -6,18 +6,24 @@
 // header('Access-Control-Max-Age: 600');
 
 function predobr_n_array($in_numbers) {
-	$numbers = $in_numbers;
-	for ($i = 0; $i<count($numbers); $i++) {
-		for ($j = 0; $j<count($numbers)-1; $j++) {
-			if (strtotime($numbers[$j]["valid_to"]) > strtotime($numbers[$j+1]["valid_to"])) {
-				$ppp = $numbers[$j]["valid_to"];
-				$numbers[$j]["valid_to"] = $numbers[$j+1]["valid_to"];
-				$numbers[$j+1]["valid_to"] = $ppp;
-			}
-		}
-	}
+	// $numbers = $in_numbers;
+	// for ($i = 0; $i<count($numbers); $i++) {
+	// 	for ($j = 0; $j<count($numbers)-1; $j++) {
+	// 		if (strtotime($numbers[$j]->valid_to) > strtotime($numbers[$j+1]->valid_to)) {
+	// 			$ppp = $numbers[$j];
+	// 			$numbers[$j] = $numbers[$j+1];
+	// 			$numbers[$j+1] = $ppp;
+	// 		}
+	// 	}
+	// }
 
-	return $numbers;
+	// return $numbers;
+
+	usort($in_numbers->passes, function ($v1, $v2) {
+		return strtotime($v1->valid_to) > strtotime($v2->valid_to) ? -1 : 1;
+	});
+
+	return $in_numbers;
 }
 
 function get_number_info($number) {
@@ -608,7 +614,8 @@ function ch_number_after_add( WP_REST_Request $request ){
 
 		if (empty($info)) return [];
 		
-		$rez = array_reverse($info->passes);
+		// $rez = array_reverse($info->passes);
+		$rez = $info->passes;
 		
 		foreach ($rez as $element) {
 			$statuses = get_status($element);
