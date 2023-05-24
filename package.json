@@ -11,8 +11,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "send_to_host": "cd dist && scp -C -r * manist1h_crm@manist1h.beget.tech:crm.propuska-mkad-ttk-sk.ru/public_html",
-    "send_htaccess": "scp -r dist/.htaccess manist1h_crm@manist1h.beget.tech:crm.propuska-mkad-ttk-sk.ru/public_html/.htaccess",
+    "send_to_host": "cd dist && scp -C -r * manist1h_crm@manist1h.beget.tech:crm-propuska-mts.ru/public_html",
+    "send_htaccess": "scp -r dist/.htaccess manist1h_crm@manist1h.beget.tech:crm-propuska-mts.ru/public_html/.htaccess",
     "deploy": "npm run build && npm run send_to_host && npm run send_htaccess"
   },
   "dependencies": {
