@@ -572,7 +572,7 @@ function ch_number_after_add( WP_REST_Request $request ){
 		) );
 	});
 	
-	//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/number_info?number=Х983ХК750
+	//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/number_info?number=Х983ХК750
 	function number_info( WP_REST_Request $request) {
 
 		$info = get_number_info($request["number"]);
@@ -607,7 +607,7 @@ function ch_number_after_add( WP_REST_Request $request ){
 		) );
 	});
 	
-	//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/number_info_for_site?number=Х983ХК750
+	//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/number_info_for_site?number=Х983ХК750
 	function number_info_for_site( WP_REST_Request $request) {
 
 		$info = get_number_info_for_site($request["number"]);
@@ -671,7 +671,7 @@ function reCAP($token) {
 	return json_decode($result);
 }
 
-//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/number_info_new?number=Х983ХК750
+//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/number_info_new?number=Х983ХК750
 function number_info_new( WP_REST_Request $request) {
 
 	$result = reCAP($request["token"]);
@@ -770,7 +770,7 @@ function get_all_number_variant($number, &$all_var) {
 	return $all_var;
 }
 
-//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/number_info_zag?number=Х983ХК750
+//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/number_info_zag?number=Х983ХК750
 function number_info_zag( WP_REST_Request $request) {
 
 	$all_var = [];
@@ -816,7 +816,7 @@ add_action( 'rest_api_init', function () {
 	) );
 	});
 	
-	//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/search_number_in_base?number=1
+	//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/search_number_in_base?number=1
 	function search_number_in_base( WP_REST_Request $request) {
 		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 
@@ -855,7 +855,7 @@ add_action( 'rest_api_init', function () {
 	) );
 	});
 	
-	//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/add_dolgnik?number=1
+	//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/add_dolgnik?number=1
 	function add_dolgnik( WP_REST_Request $request) {
 		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 
@@ -894,7 +894,7 @@ add_action( 'rest_api_init', function () {
 	) );
 	});
 	
-	//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/get_all_dolgnik?number=1
+	//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/get_all_dolgnik?number=1
 	function get_all_dolgnik( WP_REST_Request $request) {
 		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 
@@ -972,7 +972,7 @@ add_action( 'rest_api_init', function () {
 	) );
 	});
 	
-	//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/mass_add_dolgnik?number=1
+	//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/mass_add_dolgnik?number=1
 	function mass_add_dolgnik( WP_REST_Request $request) {
 		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 
@@ -1411,7 +1411,7 @@ add_action( 'rest_api_init', function () {
 	) );
 	});
 	
-	//https://back2.propuska-mkad-official.ru/wp-json/lscrm/v2/get_number_info_out?number=Х983ХК750
+	//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/get_number_info_out?number=Х983ХК750
 	function get_number_info_out( WP_REST_Request $request) {
 
 		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
