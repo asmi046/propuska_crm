@@ -139,7 +139,7 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 	
 
 	// if (($deycount != 24)&&($deycount != 25)&&($deycount != 26)&&($deycount != 27)&&($deycount != 28)&&($deycount != 29)&&($deycount != 30)) return 0;
-	if ($deycount != 30) return 0;
+	if ($deycount != 60) return 0;
 
 	
 	if (!checkBaseEvent("До окончания пропуска осталось 30 дней", date("Y-m-d"), $number, $info->param->pass_number)) {
@@ -147,6 +147,38 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "До окончания пропуска на ".$number." осталось 30 дней";
+		$mailContent = "Здравствуйте, пропуск на ".$number."  заканчивается ".date("d.m.Y", strtotime($info->param->end_data)).". Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
+		$mailContent .= "<br/>";
+		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
+		$mailContent .= "<br/>";
+		$mailContent .= "<br/>";
+		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
+		wp_mail($email_tosendMn, $mailSabj, $mailContent, $headersMn);
+
+		return 1;
+	}
+}
+
+
+function checOutPropuskTMP($number, $info, $email_tosendMn) {
+	
+	global  $headersMn, $serviceBase;
+
+	if ($info->param->seria !== "БА") return 0;
+	$now = date("Y-m-d 00:00:00");
+	$end = date("Y-m-d 00:00:00", strtotime($info->param->end_data));
+	
+	$deycount = floor((strtotime($end) - strtotime($now) ) / (60 * 60 * 24));
+	
+
+	if (($deycount < 30) && ($deycount > 60)) return 0;
+
+	
+	if (!checkBaseEvent("До окончания пропуска осталось ".$deycount." дней", date("Y-m-d"), $number, $info->param->pass_number)) {
+
+		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
+		
+		$mailSabj = "До окончания пропуска на ".$number." осталось ".$deycount." дней";
 		$mailContent = "Здравствуйте, пропуск на ".$number."  заканчивается ".date("d.m.Y", strtotime($info->param->end_data)).". Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
 		$mailContent .= "<br/>";
 		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
@@ -210,6 +242,8 @@ function update_number_info_ev($number, $type) {
 
 $chec_id = "CH_".rand(10000, 90000);
 
+echo "Начата проверка ".$chec_id."\n\r";
+
 $serviceBase->insert('cheking_log', array('action' => "Начата проверка", "chec_id" => $chec_id));
 
 $numbers =  $serviceBase->get_results("SELECT * FROM `service_number`");
@@ -227,7 +261,9 @@ foreach ($numbers as $elem) {
 	// if ($elem->number !== "М155ОВ67") continue;
 
 	$info = update_number_info_ev($elem->number, "");
-	
+
+	echo "Запрос данных номера ".$elem->number."\n\r";
+
    if (empty($info->param->dey_count)) continue;
    echo "# ".$index."\n\r";
    echo "№ авто: ".$elem->number;
@@ -250,6 +286,7 @@ foreach ($numbers as $elem) {
 	$RazoviPropuskCount_en += checRazoviPropusk_end($elem->number, $info, $email_tosendMn);
    $PostoyanniPropuskCount += checPostPropusk($elem->number, $info, $email_tosendMn);
    $OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
+   $OutPropuskCountTMP += checOutPropuskTMP($elem->number, $info, $email_tosendMn);
    $anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
    $index++;
 
@@ -266,6 +303,7 @@ foreach ($numbers as $elem) {
 		$RazoviPropuskCount_en += checRazoviPropusk_end($elem->number, $info, $email_tosendMn);
 		$PostoyanniPropuskCount += checPostPropusk($elem->number, $info, $email_tosendMn);
 		$OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
+		$OutPropuskCountTMP += checOutPropuskTMP($elem->number, $info, $email_tosendMn);
 		$anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
 		$index++;
 
@@ -284,6 +322,7 @@ foreach ($numbers as $elem) {
 		$RazoviPropuskCount_en += checRazoviPropusk_end($elem->number, $info, $email_tosendMn);
 		$PostoyanniPropuskCount += checPostPropusk($elem->number, $info, $email_tosendMn);
 		$OutPropuskCount += checOutPropusk($elem->number, $info, $email_tosendMn);
+		$OutPropuskCountTMP += checOutPropuskTMP($elem->number, $info, $email_tosendMn);
 		$anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
 		$index++;
    }
