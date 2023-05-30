@@ -862,7 +862,8 @@ add_action( 'rest_api_init', function () {
 		$info = get_number_info($request["number"]);
 		if (empty($info))
 			return new WP_Error( 'no_dolg_insert', 'Не удалось определить дату выпуска пропуска', [ 'status' => 403 ] );
-		$rez = array_reverse($info->passes);
+		// $rez = array_reverse($info->passes);
+		$rez = $info->passes;
 
 		$add_result = $serviceBase->insert( "dolg", [
 			"number" => $request["number"],
