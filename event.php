@@ -327,7 +327,7 @@ foreach ($numbers as $elem) {
 		$anulPropuskCount += checAnul($elem->number, $info, $email_tosendMn);
 		$index++;
    }
-   
+	sleep(8);   
 }
 
 $serviceBase->insert('cheking_log', array(
