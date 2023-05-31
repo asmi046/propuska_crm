@@ -1204,7 +1204,8 @@ add_action( 'rest_api_init', function () {
 		$aus_chec_rez = get_number_info($request["number"]);
 		
 		if (empty($request["passtype"]))
-			$getIndex = count($aus_chec_rez->passes) - 1;
+			$getIndex = 0;
+			// $getIndex = count($aus_chec_rez->passes) - 1;
 		else 
 			$getIndex = index_pass($aus_chec_rez, $request["passtype"]);
 
