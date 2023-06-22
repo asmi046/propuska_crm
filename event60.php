@@ -61,7 +61,7 @@ function checOutPropuskTMP($number, $info, $email_tosendMn) {
 	$deycount = floor((strtotime($end) - strtotime($now) ) / (60 * 60 * 24));
 	
 
-	if (($deycount <= 30) || ($deycount >= 60)) return 0;
+	if ( ($deycount != 28) && ($deycount != 29) && ($deycount != 58) && ($deycount != 59)) return 0;
 
 	
 	if (!checkBaseEvent("До окончания пропуска осталось ".$deycount." дней event60", date("Y-m-d"), $number, $info->param->pass_number)) {
@@ -106,7 +106,8 @@ echo "Начата проверка ".$chec_id."\n\r";
 
 $serviceBase->insert('cheking_log', array('action' => "Начата проверка", "chec_id" => $chec_id));
 
-$numbers =  $serviceBase->get_results("SELECT * FROM `service_number`");
+// $numbers =  $serviceBase->get_results("SELECT * FROM `service_number`");
+$numbers =  $serviceBase->get_results("SELECT * FROM `service_number` WHERE `dey_count` = 27 OR `dey_count` = 28 OR `dey_count` = 29 OR `dey_count` = 30 OR `dey_count` = 57 OR `dey_count` = 58 OR `dey_count` = 59 OR `dey_count` = 60");
 
 $index = 0;
 
@@ -175,7 +176,7 @@ foreach ($numbers as $elem) {
 		$OutPropuskCountTMP += checOutPropuskTMP($elem->number, $info, $email_tosendMn);
 		$index++;
    }
-	sleep(12);   
+	sleep(8);   
 }
 
 $serviceBase->insert('cheking_log', array(

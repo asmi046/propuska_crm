@@ -146,16 +146,14 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 	
 	$deycount = floor((strtotime($end) - strtotime($now) ) / (60 * 60 * 24));
 	
-
-	// if (($deycount != 24)&&($deycount != 25)&&($deycount != 26)&&($deycount != 27)&&($deycount != 28)&&($deycount != 29)&&($deycount != 30)) return 0;
-	if ($deycount != 60) return 0;
+	if (($deycount != 60) && ($deycount != 30)) return 0;
 
 	
-	if (!checkBaseEvent("До окончания пропуска осталось 60 дней", date("Y-m-d"), $number, $info->param->pass_number)) {
+	if (!checkBaseEvent("До окончания пропуска осталось ".$deycount." дней", date("Y-m-d"), $number, $info->param->pass_number)) {
 
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
-		$mailSabj = "До окончания пропуска на ".$number." осталось 60 дней";
+		$mailSabj = "До окончания пропуска на ".$number." осталось ".$deycount." дней";
 		$mailContent = "Здравствуйте, пропуск на ".$number."  заканчивается ".date("d.m.Y", strtotime($info->param->end_data)).". Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
 		$mailContent .= "<br/>";
 		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
