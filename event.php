@@ -5,7 +5,7 @@
 require_once __DIR__ . "/../wp-config.php";
 
 define("COMPANY_NAME", "Пропуска на МКАД");
-define("MAIL_RESEND", "info@propusk-mkad-ttk-sk.ru");
+define("MAIL_RESEND", "zakaz@propuska-mkad-ttk-sk.ru");
 // define("MAIL_RESEND", "asmi-work046@yandex.ru");
 
 $headersMn = array(
@@ -64,10 +64,10 @@ function checRazoviPropusk($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "Вышел разовый пропуск для ".$number." до ".date("d.m.Y", strtotime($info->param->end_data));
-		$mailContent = "Здравствуйте, ".$number." - вышел разовый пропуск на ".$info->param->type." с ".date("d.m.Y", strtotime($info->param->start_data))." по ".date("d.m.Y", strtotime($info->param->end_data))." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
+		$mailContent = "<html>Здравствуйте, ".$number." - вышел разовый пропуск на ".$info->param->type." с ".date("d.m.Y", strtotime($info->param->start_data))." по ".date("d.m.Y", strtotime($info->param->end_data))." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
-		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
+		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.</html>";
 		
 		echo "Отправка: ".$mailSabj."\n\r";
 
@@ -92,11 +92,11 @@ function checRazoviPropusk_end($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "Временный пропуск на машину ".$number." заканчивается сегодня";
-		$mailContent .= "Уважаемый клиент!<br/>";
+		$mailContent .= "<html>Уважаемый клиент!<br/>";
 		$mailContent = "Действие разового пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.") для автомобиля , ".$number." заканчивается сегодня.";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
-		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
+		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.</html>";
 		
 		echo "Отправка: ".$mailSabj."\n\r";
 
@@ -122,10 +122,10 @@ function checPostPropusk($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "Вышел постоянный пропуск для ".$number." до ".date("d.m.Y", strtotime($info->param->end_data));
-		$mailContent = "Здравствуйте, ".$number." - вышел постоянный пропуск на ".$info->param->type." с ".date("d.m.Y", strtotime($info->param->start_data))." по ".date("d.m.Y", strtotime($info->param->end_data))." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
+		$mailContent = "<html>Здравствуйте, ".$number." - вышел постоянный пропуск на ".$info->param->type." с ".date("d.m.Y", strtotime($info->param->start_data))." по ".date("d.m.Y", strtotime($info->param->end_data))." включительно.  Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
-		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
+		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.</html>";
 		
 		echo "Отправка: ".$mailSabj."\n\r";
 
@@ -154,12 +154,12 @@ function checOutPropusk($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "До окончания пропуска на ".$number." осталось ".$deycount." дней";
-		$mailContent = "Здравствуйте, пропуск на ".$number."  заканчивается ".date("d.m.Y", strtotime($info->param->end_data)).". Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
+		$mailContent = "<html>Здравствуйте, пропуск на ".$number."  заканчивается ".date("d.m.Y", strtotime($info->param->end_data)).". Для повторного продления свяжитесь с нами по почте zakaz@propuska-mkad-ttk-sk.ru или по телефонам: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
 		$mailContent .= "<br/>";
 		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
-		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
+		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.</html>";
 		
 		echo "Отправка: ".$mailSabj."\n\r";
 
@@ -191,12 +191,12 @@ function checAnul($number, $info, $email_tosendMn) {
 		add_filter('wp_mail_content_type',function( $content_type ) {return 'text/html';});
 		
 		$mailSabj = "Пропуск ".$number." аннулирован";
-		$mailContent = "Здравствуйте, пропуск ".$number." - Аннулирован ".date("d.m.Y", strtotime($info->param->anul_data))." Рекомендуем ограничить поездки по МКАД и внутри Москвы для избежания штрафов.";
+		$mailContent = "<html>Здравствуйте, пропуск ".$number." - Аннулирован ".date("d.m.Y", strtotime($info->param->anul_data))." Рекомендуем ограничить поездки по МКАД и внутри Москвы для избежания штрафов.";
 		$mailContent .= "<br/>";
 		$mailContent .= "Серия и номер пропуска ".$info->param->seria." ".$info->param->pass_number." (".$info->param->time.")";
 		$mailContent .= "<br/>";
 		$mailContent .= "<br/>";
-		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.";
+		$mailContent .= "Вы получили это письмо так как для вашего номера подключены уведомления, если вы хотите отказаться от уведомлений нажмите <a href = '#'>отписаться от уведомлений</a> но тогда в случае аннуляции Вашего пропуска, уведомление к вам не придет.</html>";
 		
 		echo "Отправка: ".$mailSabj."\n\r";
 
