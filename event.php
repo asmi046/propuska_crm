@@ -5,7 +5,7 @@
 require_once __DIR__ . "/../wp-config.php";
 
 define("COMPANY_NAME", "Пропуска на МКАД");
-define("MAIL_RESEND", "zakaz@propuska-mkad-ttk-sk.ru");
+define("MAIL_RESEND", "info@propusk-mkad-ttk-sk.ru");
 // define("MAIL_RESEND", "asmi-work046@yandex.ru");
 
 $headersMn = array(
