@@ -28,7 +28,7 @@ function predobr_n_array($in_numbers) {
 
 function get_number_info($number) {
 
-	$url = BI_SERVICE_URL."?apikey=".BI_SERVICE_TOKEN."&truck_num=".urlencode($number);
+	$url = BI_SERVICE_URL_FOR_SITE."?apikey=".BI_SERVICE_TOKEN."&truck_num=".urlencode($number);
 
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $url);
