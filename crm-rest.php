@@ -28,7 +28,7 @@ function predobr_n_array($in_numbers) {
 
 function get_number_info($number) {
 
-	$url = BI_SERVICE_URL_FOR_SITE."?apikey=".BI_SERVICE_TOKEN."&truck_num=".urlencode($number);
+	$url = BI_SERVICE_URL."?apikey=".BI_SERVICE_TOKEN."&truck_num=".urlencode($number);
 
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $url);
@@ -1350,7 +1350,7 @@ add_action( 'rest_api_init', function () {
 			$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 			
 
-			$numberInfo = get_number_info($request["number"]);
+			$numberInfo = get_number_info_for_site($request["number"]);
 
 			// if (empty($numberInfo->passes))
 			// 	$numberInfo = get_number_info_new($request["number"]);
