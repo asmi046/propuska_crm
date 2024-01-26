@@ -28,7 +28,6 @@
           v-model="dataOfNumber.dopemail"
           label = "e-mail (Дополнительный)*"
           outlined
-          :rules="requiredRules"
            />
 
            <v-text-field
