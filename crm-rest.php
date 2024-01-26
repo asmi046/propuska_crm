@@ -337,6 +337,7 @@ function add_one_number( WP_REST_Request $request ){
 	$addResult = $serviceBase->insert('service_number', array(
 		"number" => $request["number"],
 		"email" => $request["mail"],
+		"email_dop" => $request["dopemail"],
 		"phone" => $request["phone"],
 		"sts" => $request["sts"]
 	));

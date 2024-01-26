@@ -23,6 +23,13 @@
           outlined
           :rules="requiredRules"
            />
+          
+           <v-text-field
+          v-model="dataOfNumber.dopemail"
+          label = "e-mail (Дополнительный)*"
+          outlined
+          :rules="requiredRules"
+           />
 
            <v-text-field
           label = "Телефон"
@@ -68,6 +75,7 @@ export default {
       dataOfNumber: {
         number:"",
         email:"",
+        dopemail:"",
         phone:"",
         sts:""
       },
@@ -95,6 +103,7 @@ export default {
                     params: {
                         number: this.dataOfNumber.number,
                         mail: this.dataOfNumber.email,
+                        dopemail: this.dataOfNumber.dopemail,
                         phone: this.dataOfNumber.phone,
                         sts: this.dataOfNumber.sts
                     }
