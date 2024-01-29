@@ -122,7 +122,7 @@ export default {
                 {
                     params: {
                         number: this.deleteDialogParam.number,
-                        mail: allLibs.getCookie("userlogin"),
+                        mail: allLibs.getCookie("servautorise"),
                         token: allLibs.getCookie("servtoken"),
                     }
                 })

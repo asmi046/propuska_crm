@@ -1121,7 +1121,7 @@ add_action( 'rest_api_init', function () {
 	
 
 		if (empty($token))
-			return new WP_Error( 'no_token_incorrect', 'Токен некорректен', [ 'status' => 403 ] );
+			return new WP_Error( 'no_token_incorrect', 'Токен некорректен -', [ 'status' => 403 ] );
 
 		if ($token[0]->autorizeKey !== $request["token"]) 
 			return new WP_Error( 'no_token_incorrect', 'Токен некорректен', [ 'status' => 403 ] );
