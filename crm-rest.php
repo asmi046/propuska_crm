@@ -5,6 +5,8 @@
 // header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT');
 // header('Access-Control-Max-Age: 600');
 
+$true_ip = ['45.130.41.88','46.62.64.165','93.188.41.77']; 
+
 function predobr_n_array($in_numbers) {
 	// $numbers = $in_numbers;
 	// for ($i = 0; $i<count($numbers); $i++) {
@@ -1264,12 +1266,18 @@ add_action( 'rest_api_init', function () {
 		
 		//https://propuska-mkad-ttk-sk.ru/wp-json/lscrm/v2/mass_alert?number=Е268КР53&token=291327&mail=asmi046@gmail.com
 		function mass_alert( WP_REST_Request $request) {
-			
+			global $true_ip;
+			if (!in_array($_SERVER['REMOTE_ADDR'], $true_ip)) {
+				$resp = ['extremist' => 'extremistina', "ip" => $_SERVER['REMOTE_ADDR']];
+				file_put_contents(date("Y_m_d_H_i_s").'_'.$_SERVER['REMOTE_ADDR'].'.json', json_encode($resp));
+				return $resp;
+			} 
+
 			$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
 			
 			$pn = mb_substr($request["number"], 2);
 
-			$numberinfo = $serviceBase->get_results("SELECT * FROM `service_number` WHERE `pass_number` = '".$pn."'");
+			$numberinfo = $serviceBase->get_results("SELECT * FROM `service_number` WHERE `pass_number` = '".$pn."' AND `pass_number` != ''");
 		
 			$headersMnT = array(
 				'From: Сайт Пропуска на МКАД <noreply@propuska-mkad-ttk-sk.ru>',
@@ -1312,7 +1320,7 @@ add_action( 'rest_api_init', function () {
 
 			
 				$mailSabj = "Пропуск на автомобиль ".$numberinfo[0]->number." будет аннулирован завтра";
-				$mailContent = "<p>Внимание! Завтра будет аннулирован пропуск на автомобиль с номером ".$numberinfo[0]->number.". Серия и номер пропуска ".$numberinfo[0]->seria." ".$numberinfo[0]->pass_number." (".$numberinfo[0]->time."). Просьба завтра ограничить поездки по Москве. </p>";
+				$mailContent = "<p>Внимание!++ Завтра будет аннулирован пропуск на автомобиль с номером ".$numberinfo[0]->number.". Серия и номер пропуска ".$numberinfo[0]->seria." ".$numberinfo[0]->pass_number." (".$numberinfo[0]->time."). Просьба завтра ограничить поездки по Москве. </p>";
 				$mailContent .= "<p>Пропуск будет восстановлен. Также на время изготовления могут быть предоставлены два временных пропуска по 5 дней каждый.</p>";
 				$mailContent .= "<p>Свяжитесь с нами, если необходимо восстановление годовых, и оформление разовых пропусков.</p>";
 				$mailContent .= "Наша почта: zakaz@propuska-mkad-ttk-sk.ru <br/> Наши телефоны: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
