@@ -5,7 +5,7 @@
 // header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT');
 // header('Access-Control-Max-Age: 600');
 
-$true_ip = ['45.130.41.88','46.62.64.165','93.188.41.77','95.24.26.89','95.24.24.107']; 
+$true_ip = ['45.130.41.88','46.62.64.165','93.188.41.77','95.24.26.89', '95.24.24.107', '188.187.143.115']; 
 
 function predobr_n_array($in_numbers) {
 	// $numbers = $in_numbers;
