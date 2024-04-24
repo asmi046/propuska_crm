@@ -872,7 +872,8 @@ add_action( 'rest_api_init', function () {
 		$add_result = $serviceBase->insert( "dolg", [
 			"number" => $request["number"],
 			"email" => $request["email"],
-			"adding_data" => (string)date('Y-m-d H:i:s', strtotime($rez[0]->valid_from)),
+			// "adding_data" => (string)date('Y-m-d H:i:s', strtotime($rez[0]->valid_from)),
+			"adding_data" => (string)date('Y-m-d H:i:s'),
 			"name" => $request["name"],
 		], ["%s", "%s", "%s"] );
 
@@ -1013,7 +1014,9 @@ add_action( 'rest_api_init', function () {
 			$add_result = $serviceBase->insert( "dolg", [
 				"number" => $searchin_nm,
 				"email" => $array_info[0]->email,
-				"adding_data" => (string)date('Y-m-d H:i:s', strtotime($rez[0]->valid_from))
+				// "adding_data" => (string)date('Y-m-d H:i:s', strtotime($rez[0]->valid_from))
+				"adding_data" => (string)date('Y-m-d H:i:s')
+
 			], ["%s", "%s"] );
 
 			if (!$add_result) {
