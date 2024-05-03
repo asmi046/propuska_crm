@@ -102,12 +102,11 @@ export default {
                 },
 
                 deleteNumber: () => {
-                    
                         axios.get(this.REST_API_PREFIX + 'dell_dolgnik',
                         {
                             params: {
                                 id: this.deleteDialogParam.recordId,
-                                mail: allLibs.getCookie("userlogin"),
+                                mail: allLibs.getCookie("servautorise"),
                                 token: allLibs.getCookie("servtoken"),
                             }
                         })
