@@ -22,7 +22,7 @@ foreach ($numbers as $elem) {
     $email_tosendMn = array("info@propusk247.ru", "asmi046@gmail.com", $elem->email);
 
     $deycount = countDaysBetweenDates(date("Y-m-d H:i:s"), $elem->adding_data);
-	$deycount = (($deycount+1)<0)?0:($deycount); 
+	$deycount = (($deycount+1)<0)?1:($deycount+1); 
 
     $serviceBase->update('dolg', [
         "checing_data" => date("Y-m-d H:i:s"),

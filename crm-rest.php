@@ -875,6 +875,7 @@ add_action( 'rest_api_init', function () {
 			// "adding_data" => (string)date('Y-m-d H:i:s', strtotime($rez[0]->valid_from)),
 			"adding_data" => (string)date('Y-m-d'),
 			"name" => $request["name"],
+			"deys" => 1,
 		], ["%s", "%s", "%s"] );
 
 		if (!$add_result)
@@ -1324,7 +1325,7 @@ add_action( 'rest_api_init', function () {
 			
 				$mailSabj = "Пропуск на автомобиль ".$numberinfo[0]->number." будет аннулирован завтра";
 				$mailContent = "<p>Внимание!++ Завтра будет аннулирован пропуск на автомобиль с номером ".$numberinfo[0]->number.". Серия и номер пропуска ".$numberinfo[0]->seria." ".$numberinfo[0]->pass_number." (".$numberinfo[0]->time."). Просьба завтра ограничить поездки по Москве. </p>";
-				$mailContent .= "<p>Пропуск будет восстановлен. Также на время изготовления могут быть предоставлены два временных пропуска по 5 дней каждый.</p>";
+				$mailContent .= "<p>Пропуск будет восстановлен. Также на время изготовления могут быть предоставлены два временных пропуска по 10 дней каждый.</p>";
 				$mailContent .= "<p>Свяжитесь с нами, если необходимо восстановление годовых, и оформление разовых пропусков.</p>";
 				$mailContent .= "Наша почта: zakaz@propuska-mkad-ttk-sk.ru <br/> Наши телефоны: <br/>+7 (499) 404-21-19 <br/>+7 (916) 006-52-77";
 				$mailContent .= "<br/>";
