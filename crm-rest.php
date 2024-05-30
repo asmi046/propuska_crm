@@ -57,7 +57,7 @@ function get_number_info($number) {
 
 function get_number_info_for_site($number) {
 
-	$url = BI_SERVICE_URL_FOR_SITE."?apikey=".BI_SERVICE_TOKEN."&truck_num=".urlencode($number);
+	$url = BI_SERVICE_URL_FOR_SITE."?apikey=".BI_SERVICE_TOKEN_FOR_SITE."&truck_num=".urlencode($number);
 
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $url);
@@ -791,7 +791,8 @@ function number_info_zag( WP_REST_Request $request) {
 	if (empty($passes)) return [];
 	
 
-	$rez = array_reverse($passes);
+	// $rez = array_reverse($passes);
+	$rez = $passes;
 	
 	foreach ($rez as $element) {
 		$statuses = get_status($element);
@@ -1000,7 +1001,8 @@ add_action( 'rest_api_init', function () {
 					"number" => $searchin_nm,
 					"adding"=> 0,
 					"email" => "", 
-					"msg" => "Не найден в базе"
+					"msg" => "Не найден в базе",
+					
 				];
 
 				continue;
@@ -1016,8 +1018,8 @@ add_action( 'rest_api_init', function () {
 				"number" => $searchin_nm,
 				"email" => $array_info[0]->email,
 				// "adding_data" => (string)date('Y-m-d H:i:s', strtotime($rez[0]->valid_from))
-				"adding_data" => (string)date('Y-m-d')
-
+				"adding_data" => (string)date('Y-m-d'),
+				"deys" => 1
 			], ["%s", "%s"] );
 
 			if (!$add_result) {
