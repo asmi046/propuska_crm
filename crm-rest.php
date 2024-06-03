@@ -597,13 +597,23 @@ function ch_number_after_add( WP_REST_Request $request ){
 // Проверка номера через сервис (Для сайта)
 // 
 
+
+function getCaptcha($SecretKey) {
+	$Response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".reCAPTCHA_KEY."&response={$SecretKey}");
+	$Return = json_decode($Response);
+	return $Return;
+}
+
 	add_action( 'rest_api_init', function () {
 		register_rest_route( 'lscrm/v2', '/number_info_for_site', array(
 			'methods'  => 'GET',
 			'callback' => 'number_info_for_site',
 			'args' => array(
 				'number' => array(
-					'default'           => "",
+					'required'          => true,        		
+				),
+				
+				'token' => array(
 					'required'          => true,        		
 				)
 			),
@@ -612,6 +622,20 @@ function ch_number_after_add( WP_REST_Request $request ){
 	
 	//https://back2.crm-propuska-mts.ru/wp-json/lscrm/v2/number_info_for_site?number=Х983ХК750
 	function number_info_for_site( WP_REST_Request $request) {
+
+
+		$rc_result = getCaptcha($_REQUEST['token']);
+
+		$serviceBase = new wpdb(BI_SERVICE_USER_NAME, BI_SERVICE_USER_PASS, BI_SERVICE_DB_NAME, BI_SERVICE_DB_HOST);
+		$serviceBase->insert( "query_for_site", [
+			"IP" => $_SERVER['REMOTE_ADDR'],
+			"truck_number" => $request["number"],
+			"bot" => $rc_result->score
+		], ["%s", "%s", "%s"] );
+
+		
+		if ($rc_result->success == false || $rc_result->score <= 0.5) 
+			wp_die('Пшли вон!');
 
 		$info = get_number_info_for_site($request["number"]);
 
